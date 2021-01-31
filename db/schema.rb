@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_01_31_022704) do
+ActiveRecord::Schema.define(version: 2021_01_31_194443) do
 
   create_table "companies", force: :cascade do |t|
     t.text "symbol"
@@ -26,6 +26,7 @@ ActiveRecord::Schema.define(version: 2021_01_31_022704) do
     t.string "exchangeShortName"
     t.string "country"
     t.datetime "ipoDate"
+    t.text "description"
   end
 
 end

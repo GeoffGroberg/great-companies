@@ -1,31 +1,6 @@
 class CompaniesController < ApplicationController
   before_action :set_company, only: %i[ show edit update destroy updateFinancials]
 
-  def updateFinancials
-    @company = Company.find(params[:id])
-    url = "https://fmpcloud.io/api/v3/profile/#{@company.symbol}?apikey=#{$apiKey}"
-    uri = URI(url)
-    response = Net::HTTP.get(uri)
-    response = JSON.parse(response)
-    c = response.first
-    @company.symbol = c['symbol']
-    @company.name = c['companyName']
-    @company.price = c['price']
-    @company.dcf = c['dcf']
-    @company.mktCap = c['mktCap']
-    @company.volAvg = c[':volAvg']
-    @company.industry = c[':industry']
-    @company.sector = c['sector']
-    @company.exchangeShortName = c['exchangeShortName']
-    @company.country = c['country']
-    @company.ipoDate = c['ipoDate']
-    if @company.save
-      redirect_to @company, notice: "Company was successfully updated."
-    else
-      render :new, status: :unprocessable_entity
-    end
-  end
-  
   # GET /companies or /companies.json
   def index
     @companies = Company.all
@@ -63,7 +38,7 @@ class CompaniesController < ApplicationController
     @company = Company.new(company_params)
 
     respond_to do |format|
-      if @company.save
+      if @company.pull and @company.save
         format.html { redirect_to @company, notice: "Company was successfully created." }
         format.json { render :show, status: :created, location: @company }
       else
@@ -76,7 +51,7 @@ class CompaniesController < ApplicationController
   # PATCH/PUT /companies/1 or /companies/1.json
   def update
     respond_to do |format|
-      if @company.update(company_params)
+      if @company.pull and @company.save
         format.html { redirect_to @company, notice: "Company was successfully updated." }
         format.json { render :show, status: :ok, location: @company }
       else
@@ -103,6 +78,7 @@ class CompaniesController < ApplicationController
 
     # Only allow a list of trusted parameters through.
     def company_params
-      params.require(:company).permit(:symbol, :name)
+      params.require(:company).permit(:symbol)
     end
+    
 end

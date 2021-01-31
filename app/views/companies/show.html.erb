@@ -9,10 +9,18 @@
   <%= @company.name %>
 </p>
 <p>
+  <strong>IPO Date:</strong>
+  <%= @company.ipoDate %>
+</p>
+<p>
+  <strong>Description:</strong>
+  <%= @company.description %>
+</p>
+<p>
   <strong>Price:</strong>
   <%= @company.price %>
 </p>
 
 <%= link_to 'Edit', edit_company_path(@company) %> |
 <%= link_to 'Back', companies_path %> |
-<%= link_to "Update Financials", updateFinancials_path(@company) %>
+<%= link_to "Update Info", company_path(@company), method: :put %>
