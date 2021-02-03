@@ -4,13 +4,7 @@ class Company < ApplicationRecord
   def pull
     # use an external api to pull company info
     url = "https://fmpcloud.io/api/v3/profile/#{self.symbol}?apikey=#{$apiKey}"
-    uri = URI(url)
-    response = Net::HTTP.get_response(uri)
-    unless response.code == '200'
-      self.errors.add(:base, "Unable to pull company info. Response code: #{response.code}")
-      return false
-    end
-    body = JSON.parse(response.body)
+    body = apiCall(url)
     c = body.first
     if c.nil?
       self.errors.add(:base, "Unable to pull company info. No data.")
@@ -34,6 +28,25 @@ class Company < ApplicationRecord
     self.exchangeShortName = c['exchangeShortName']
     self.country = c['country']
     self.ipoDate = c['ipoDate']
+  end
+  
+  def pullProfile
+  end
+  
+  def pullAnnualStatements
+  end
+  
+  private
+  
+  def apiCall(url)
+    uri = URI(url)
+    response = Net::HTTP.get_response(uri)
+    unless response.code == '200'
+      self.errors.add(:base, "Unsuccessful API call. Response code: #{response.code}")
+      return false
+    end
+    body = JSON.parse(response.body)
+    body
   end
 
 end

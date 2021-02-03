@@ -4,20 +4,6 @@ class CompaniesController < ApplicationController
   # GET /companies or /companies.json
   def index
     @companies = Company.all
-    # @companies.each do |c|
-    #   c.destroy
-    # end
-
-    # url = "https://fmpcloud.io/api/v3/nasdaq_constituent?apikey=#{$apiKey}"
-    # uri = URI(url)
-    # response = Net::HTTP.get(uri)
-    # response = JSON.parse(response)
-    # response.each do |c|
-    #   company = Company.new
-    #   company.symbol = c['symbol']
-    #   company.name = c['name']
-    #   company.save
-    # end
   end
 
   # GET /companies/1 or /companies/1.json
@@ -45,6 +31,14 @@ class CompaniesController < ApplicationController
         format.html { render :new, status: :unprocessable_entity }
         format.json { render json: @company.errors, status: :unprocessable_entity }
       end
+    end
+  end
+  
+  def addUSCompanies
+    AddUsCompaniesJob.perform_later
+    respond_to do |format|
+      format.html { redirect_to companies_url, notice: "Adding companies..." }
+      format.json { head :no_content }
     end
   end
 
