@@ -1,8 +1,12 @@
 class Company < ApplicationRecord
   validates :symbol, uniqueness: true
+  has_many :annual_key_financials
 
   def pull
-    # use an external api to pull company info
+    self.pullProfile
+  end
+  
+  def pullProfile
     url = "https://fmpcloud.io/api/v3/profile/#{self.symbol}?apikey=#{$apiKey}"
     body = apiCall(url)
     c = body.first
@@ -28,9 +32,6 @@ class Company < ApplicationRecord
     self.exchangeShortName = c['exchangeShortName']
     self.country = c['country']
     self.ipoDate = c['ipoDate']
-  end
-  
-  def pullProfile
   end
   
   def pullAnnualStatements
