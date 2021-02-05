@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_02_03_022251) do
+ActiveRecord::Schema.define(version: 2021_02_05_034917) do
 
   create_table "annual_key_financials", force: :cascade do |t|
     t.integer "company_id", null: false
@@ -23,7 +23,7 @@ ActiveRecord::Schema.define(version: 2021_02_03_022251) do
     t.decimal "debt_ratio"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
-    t.index "\"company\", \"date\"", name: "index_annual_key_financials_on_company_and_date", unique: true
+    t.index "\"company\", \"date\"", name: "index_annual_key_financials_on_company_and_date"
     t.index ["company_id"], name: "index_annual_key_financials_on_company_id"
   end
 

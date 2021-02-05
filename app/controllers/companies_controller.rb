@@ -45,7 +45,7 @@ class CompaniesController < ApplicationController
   # PATCH/PUT /companies/1 or /companies/1.json
   def update
     respond_to do |format|
-      if @company.pull and @company.save
+      if @company.pull
         format.html { redirect_to @company, notice: "Company was successfully updated." }
         format.json { render :show, status: :ok, location: @company }
       else

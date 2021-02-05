@@ -21,6 +21,18 @@
   <%= @company.price %>
 </p>
 
+<% @company.annual_key_financials.each do |a| %>
+<br><%= a.date %> |
+<%= a.roic %> |
+<%= a.equity %> |
+<%= a.eps %> |
+<%= a.revenue %> |
+<%= a.free_cash_flow %> |
+<%= a.debt_ratio %>
+<% end %>
+<br>
+<hr>
+
 <%= link_to 'Edit', edit_company_path(@company) %> |
 <%= link_to 'Back', companies_path %> |
 <%= link_to "Update Info", company_path(@company), method: :put %>
