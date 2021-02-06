@@ -18,38 +18,52 @@
 </p>
 <p>
   <strong>Price:</strong>
-  <%= @company.price %>
+  <%= number_with_precision(@company.price, precision: 2) %>
 </p>
 
-<table>
+<table class="financials">
 	<caption>Annual Key Financials</caption>
 	<thead>
 		<tr>
-			<th>Date</th>
-			<th>ROIC</th>
-			<th>Equity</th>
-			<th>EPS</th>
-			<th>Revenue</th>
-			<th>FCF</th>
-			<th>Debt</th>
-			<th></th>
+			<th scope="col">Date</th>
+			<th scope="col">Equity</th>
+			<th scope="col">EPS</th>
+			<th scope="col">Revenue</th>
+			<th scope="col">FCF</th>
+			<th scope="col">Debt</th>
+			<th scope="col">ROIC</th>
+			<th scope="col">Equity Growth</th>
+			<th scope="col">EPS Growth</th>
+			<th scope="col">Revenue Growth</th>
+			<th scope="col">FCF Growth</th>
 		</tr>
 	</thead>
 	<tbody>
-	<% @company.annual_key_financials.each_with_index do |v, k| %>
-		<tr>
+	<% @company.key_metrics.order("date DESC").each_with_index do |v, k| %>
+		<% unless k > 10 %>
+		<tr class="<%= v.ttm ? 'ttm' : '' %>">
 			<td><%= v.date %></td>
-			<td><%= number_with_precision(v.roic, precision: 1) %></td>
-			<td><%= number_to_human(v.equity) %></td>
+			<td><%= number_with_precision(v.equity, precision: 1) %></td>
 			<td><%= number_with_precision(v.eps, precision: 1) %></td>
-			<td><%= number_to_human(v.revenue) %></td>
-			<td><%= number_to_human(v.free_cash_flow) %></td>
+			<td><%= number_with_precision(v.revenue, precision: 1) %></td>
+			<td><%= number_with_precision(v.free_cash_flow, precision: 1) %></td>
 			<td><%= number_with_precision(v.debt_ratio, precision: 1) %></td>
+			<td class="key"><%= number_to_percentage(v.roic, precision: 1) %></td>
 			<!-- growth -->
-			<% if @company.annual_key_financials.length > k + 1 %>
-			<td><%= 'growth' %><td>
+			<% if @company.key_metrics.size > k + 1 %>
+				<% prev = @company.key_metrics[k + 1] %>
+				<td class="key"><%= number_to_percentage(((v.equity / prev.equity) - 1) * 100, precision: 1) %></td>
+				<td class="key"><%= number_to_percentage(((v.eps / prev.eps) - 1) * 100, precision: 1) %></td>
+				<td class="key"><%= number_to_percentage(((v.revenue / prev.revenue) - 1) * 100, precision: 1) %></td>
+				<td class="key"><%= number_to_percentage(((v.free_cash_flow / prev.free_cash_flow) - 1) * 100, precision: 1) %></td>
+			<% else %>
+				<!-- <td></td>
+				<td></td>
+				<td></td>
+				<td></td> -->
 			<% end %>
 		</tr>
+		<% end %>
 	<% end %>
 	</tbody>
 </table>

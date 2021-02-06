@@ -10,22 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_02_05_034917) do
-
-  create_table "annual_key_financials", force: :cascade do |t|
-    t.integer "company_id", null: false
-    t.date "date"
-    t.decimal "roic"
-    t.decimal "equity"
-    t.decimal "eps"
-    t.decimal "revenue"
-    t.decimal "free_cash_flow"
-    t.decimal "debt_ratio"
-    t.datetime "created_at", precision: 6, null: false
-    t.datetime "updated_at", precision: 6, null: false
-    t.index "\"company\", \"date\"", name: "index_annual_key_financials_on_company_and_date"
-    t.index ["company_id"], name: "index_annual_key_financials_on_company_id"
-  end
+ActiveRecord::Schema.define(version: 2021_02_06_184228) do
 
   create_table "companies", force: :cascade do |t|
     t.text "symbol"
@@ -44,5 +29,21 @@ ActiveRecord::Schema.define(version: 2021_02_05_034917) do
     t.text "description"
   end
 
-  add_foreign_key "annual_key_financials", "companies"
+  create_table "key_metrics", force: :cascade do |t|
+    t.integer "company_id", null: false
+    t.date "date"
+    t.decimal "roic"
+    t.decimal "equity"
+    t.decimal "eps"
+    t.decimal "revenue"
+    t.decimal "free_cash_flow"
+    t.decimal "debt_ratio"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.boolean "ttm", default: false
+    t.index "\"company\", \"date\"", name: "index_annual_key_financials_on_company_and_date"
+    t.index ["company_id"], name: "index_key_metrics_on_company_id"
+  end
+
+  add_foreign_key "key_metrics", "companies"
 end

@@ -13,3 +13,26 @@
  *= require_tree .
  *= require_self
  */
+
+table.financials {
+	margin: 1rem 0;
+}
+table.financials caption {
+	font-size: 1rem;
+	font-weight: bold;
+	text-align: left;
+}
+table.financials tr.ttm td {
+	background: #ddd;
+	text-align: right;
+}
+table.financials td {
+	background: #eee;
+	text-align: right;
+	margin: 0;
+	padding: 1px 3px;
+}
+table.financials td.key {
+/*	background: #fff;*/
+	font-weight: bold;
+}

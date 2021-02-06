@@ -1,10 +1,10 @@
 class Company < ApplicationRecord
   validates :symbol, uniqueness: true
-  has_many :annual_key_financials
+  has_many :key_metrics
 
   def pull
     profile_result = self.pullProfile
-    financials_result = self.pullAnnualKeyFinancials
+    financials_result = self.pullKeyMetrics
     if profile_result and financials_result
       return true
     end
@@ -39,28 +39,41 @@ class Company < ApplicationRecord
     return true
   end
   
-  def pullAnnualKeyFinancials(limit: 20)
+  def pullKeyMetrics(limit: 20)
     # get financial statements
-    key_metrics_statements = apiCall(request: 'key-metrics', limit: limit)
-    balance_sheet_statements = apiCall(request: 'balance-sheet-statement', limit: limit)
-    income_statements = apiCall(request: 'income-statement', limit: limit)
-    cash_flow_statements = apiCall(request: 'cash-flow-statement', limit: limit)
-    # create a new AnnualKeyFinancial for each year
+    key_metrics = apiCall(request: 'key-metrics', limit: limit)
+    key_metrics_ttm = apiCall(request: 'key-metrics-ttm', limit: limit)
+    # create a new KeyMetric for each year
     x = 0
-    while x < 20
+    while x < limit
       x += 1
-      if key_metrics_statements[x-1] and balance_sheet_statements[x-1] and income_statements[x-1] and cash_flow_statements[x-1] and key_metrics_statements[x-1]['date']
-        statement_date = key_metrics_statements[x-1]['date']
-        annual_key_financial = AnnualKeyFinancial.find_or_create_by(date: statement_date, company_id: self.id)
-        annual_key_financial.roic = key_metrics_statements[x-1]['roic'].to_f * 100
-        annual_key_financial.equity = balance_sheet_statements[x-1]['totalStockholdersEquity'].to_f
-        annual_key_financial.eps = income_statements[x-1]['eps'].to_f
-        annual_key_financial.revenue = income_statements[x-1]['revenue'].to_f
-        annual_key_financial.free_cash_flow = cash_flow_statements[x-1]['freeCashFlow'].to_f
-        longTermDebt = balance_sheet_statements[x-1]['longTermDebt'].to_f
-        annual_key_financial.debt_ratio = longTermDebt / annual_key_financial.free_cash_flow
-        annual_key_financial.save
+      if key_metrics[x-1] and key_metrics[x-1]['date']
+        statement_date = key_metrics[x-1]['date']
+        key_metric = KeyMetric.find_or_create_by(date: statement_date, company_id: self.id)
+        key_metric.roic = key_metrics[x-1]['roic'].to_f * 100
+        key_metric.equity = key_metrics[x-1]['shareholdersEquityPerShare'].to_f
+        key_metric.eps = key_metrics[x-1]['netIncomePerShare'].to_f
+        key_metric.revenue = key_metrics[x-1]['revenuePerShare'].to_f
+        key_metric.free_cash_flow = key_metrics[x-1]['freeCashFlowPerShare'].to_f
+        longTermDebt = key_metrics[x-1]['interestDebtPerShare'].to_f
+        key_metric.debt_ratio = longTermDebt / key_metric.free_cash_flow
+        key_metric.save
       end
+    end
+    # update the ttm keyMetric
+    # IMPORTANT: there should only ever be 1 key metric where ttm = true for a given company
+    if key_metrics_ttm.first
+      key_metrics_ttm = key_metrics_ttm.first
+      key_metric_ttm = KeyMetric.find_or_create_by(company_id: self.id, ttm: true)
+      key_metric_ttm.date = Date.today.to_s
+      key_metric_ttm.roic = key_metrics_ttm['roicTTM'].to_f * 100
+      key_metric_ttm.equity = key_metrics_ttm['shareholdersEquityPerShareTTM'].to_f
+      key_metric_ttm.eps = key_metrics_ttm['netIncomePerShareTTM'].to_f
+      key_metric_ttm.revenue = key_metrics_ttm['revenuePerShareTTM'].to_f
+      key_metric_ttm.free_cash_flow = key_metrics_ttm['freeCashFlowPerShareTTM'].to_f
+      longTermDebt = key_metrics_ttm['interestDebtPerShareTTM'].to_f
+      key_metric_ttm.debt_ratio = longTermDebt / key_metric_ttm.free_cash_flow
+      key_metric_ttm.save
     end
     return true
   end

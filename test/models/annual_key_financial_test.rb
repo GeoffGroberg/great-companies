@@ -1,6 +1,6 @@
 require "test_helper"
 
-class AnnualKeyFinancialTest < ActiveSupport::TestCase
+class KeyMetricTest < ActiveSupport::TestCase
   # test "the truth" do
   #   assert true
   # end

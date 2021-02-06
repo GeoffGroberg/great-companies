@@ -27,7 +27,6 @@ class AddUsCompaniesJob < ApplicationJob
           @company = Company.new
           @company.symbol = c['symbol']
           @company.pull
-          @company.save
         end
       end
       # break if x > 15
