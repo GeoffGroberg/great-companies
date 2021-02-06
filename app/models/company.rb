@@ -42,14 +42,14 @@ class Company < ApplicationRecord
   def pullAnnualKeyFinancials(limit: 20)
     # get financial statements
     key_metrics_statements = apiCall(request: 'key-metrics', limit: limit)
-    balance_sheet_statements = apiCall(request: 'balance-sheet-statement')
-    income_statements = apiCall(request: 'income-statement')
-    cash_flow_statements = apiCall(request: 'cash-flow-statement')
+    balance_sheet_statements = apiCall(request: 'balance-sheet-statement', limit: limit)
+    income_statements = apiCall(request: 'income-statement', limit: limit)
+    cash_flow_statements = apiCall(request: 'cash-flow-statement', limit: limit)
     # create a new AnnualKeyFinancial for each year
     x = 0
     while x < 20
       x += 1
-      if key_metrics_statements[x-1] and key_metrics_statements[x-1]['date']
+      if key_metrics_statements[x-1] and balance_sheet_statements[x-1] and income_statements[x-1] and cash_flow_statements[x-1] and key_metrics_statements[x-1]['date']
         statement_date = key_metrics_statements[x-1]['date']
         annual_key_financial = AnnualKeyFinancial.find_or_create_by(date: statement_date, company_id: self.id)
         annual_key_financial.roic = key_metrics_statements[x-1]['roic'].to_f * 100
