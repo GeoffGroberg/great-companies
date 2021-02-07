@@ -84,9 +84,6 @@ class Company < ApplicationRecord
     # yearly growth
     key_metrics = self.key_metrics.order("date DESC")
     key_metrics.each_with_index do |v, k|
-      puts "***"
-      puts key_metrics[k].date
-      puts "***"
       if key_metrics.size > k + 1
         prev = key_metrics[k + 1]
         key_metrics[k].equity_growth = ((v.equity / prev.equity) - 1) * 100
@@ -112,6 +109,8 @@ class Company < ApplicationRecord
     self.revenue_avg_growth10 = avg('revenue_growth', 10)
     self.revenue_avg_growth5 = avg('revenue_growth', 5)
     self.revenue_avg_growth2 = avg('revenue_growth', 2)
+    # debt ratio
+    self.debt_ratio = key_metrics.first.debt_ratio
     self.save
   end
   

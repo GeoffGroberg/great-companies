@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_02_06_221433) do
+ActiveRecord::Schema.define(version: 2021_02_07_043016) do
 
   create_table "companies", force: :cascade do |t|
     t.text "symbol"
@@ -42,6 +42,7 @@ ActiveRecord::Schema.define(version: 2021_02_06_221433) do
     t.decimal "revenue_avg_growth10"
     t.decimal "revenue_avg_growth5"
     t.decimal "revenue_avg_growth2"
+    t.decimal "debt_ratio"
   end
 
   create_table "key_metrics", force: :cascade do |t|
