@@ -2,6 +2,7 @@ Rails.application.routes.draw do
   resources :companies
   # get '/company/:id/updateFinancials', to: 'companies#updateFinancials', as: 'updateFinancials'
   get '/company/addUSCompanies', to: 'companies#addUSCompanies', as: 'addUSCompanies'
+  get '/company/updateAllCompanies', to: 'companies#updateAllCompanies', as: 'updateAllCompanies'
   
   root 'welcome#index'
   

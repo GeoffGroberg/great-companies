@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_02_06_184228) do
+ActiveRecord::Schema.define(version: 2021_02_06_221433) do
 
   create_table "companies", force: :cascade do |t|
     t.text "symbol"
@@ -27,6 +27,21 @@ ActiveRecord::Schema.define(version: 2021_02_06_184228) do
     t.string "country"
     t.datetime "ipoDate"
     t.text "description"
+    t.decimal "roic_avg10"
+    t.decimal "roic_avg5"
+    t.decimal "roic_avg2"
+    t.decimal "equity_avg_growth10"
+    t.decimal "equity_avg_growth5"
+    t.decimal "equity_avg_growth2"
+    t.decimal "free_cash_flow_avg_growth10"
+    t.decimal "free_cash_flow_avg_growth5"
+    t.decimal "free_cash_flow_avg_growth2"
+    t.decimal "eps_avg_growth10"
+    t.decimal "eps_avg_growth5"
+    t.decimal "eps_avg_growth2"
+    t.decimal "revenue_avg_growth10"
+    t.decimal "revenue_avg_growth5"
+    t.decimal "revenue_avg_growth2"
   end
 
   create_table "key_metrics", force: :cascade do |t|
@@ -41,6 +56,10 @@ ActiveRecord::Schema.define(version: 2021_02_06_184228) do
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.boolean "ttm", default: false
+    t.decimal "equity_growth"
+    t.decimal "eps_growth"
+    t.decimal "revenue_growth"
+    t.decimal "free_cash_flow_growth"
     t.index "\"company\", \"date\"", name: "index_annual_key_financials_on_company_and_date"
     t.index ["company_id"], name: "index_key_metrics_on_company_id"
   end

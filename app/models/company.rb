@@ -5,6 +5,7 @@ class Company < ApplicationRecord
   def pull
     profile_result = self.pullProfile
     financials_result = self.pullKeyMetrics
+    self.calculate # calculate growth rates from key metrics
     if profile_result and financials_result
       return true
     end
@@ -78,7 +79,67 @@ class Company < ApplicationRecord
     return true
   end
   
+  def calculate
+    # run calculations on key metrics
+    # yearly growth
+    key_metrics = self.key_metrics.order("date DESC")
+    key_metrics.each_with_index do |v, k|
+      puts "***"
+      puts key_metrics[k].date
+      puts "***"
+      if key_metrics.size > k + 1
+        prev = key_metrics[k + 1]
+        key_metrics[k].equity_growth = ((v.equity / prev.equity) - 1) * 100
+        key_metrics[k].eps_growth = ((v.eps / prev.eps) - 1) * 100
+        key_metrics[k].revenue_growth = ((v.revenue / prev.revenue) - 1) * 100
+        key_metrics[k].free_cash_flow_growth = ((v.free_cash_flow / prev.free_cash_flow) - 1) * 100
+        key_metrics[k].save
+      end
+    end
+    # yearly averages
+    self.roic_avg10 = avg('roic', 10)
+    self.roic_avg5 = avg('roic', 5)
+    self.roic_avg2 = avg('roic', 2)
+    self.equity_avg_growth10 = avg('equity_growth', 10)
+    self.equity_avg_growth5 = avg('equity_growth', 5)
+    self.equity_avg_growth2 = avg('equity_growth', 2)
+    self.free_cash_flow_avg_growth10 = avg('free_cash_flow_growth', 10)
+    self.free_cash_flow_avg_growth5 = avg('free_cash_flow_growth', 5)
+    self.free_cash_flow_avg_growth2 = avg('free_cash_flow_growth', 2)
+    self.eps_avg_growth10 = avg('eps_growth', 10)
+    self.eps_avg_growth5 = avg('eps_growth', 5)
+    self.eps_avg_growth2 = avg('eps_growth', 2)
+    self.revenue_avg_growth10 = avg('revenue_growth', 10)
+    self.revenue_avg_growth5 = avg('revenue_growth', 5)
+    self.revenue_avg_growth2 = avg('revenue_growth', 2)
+    self.save
+  end
+  
   private
+  
+  def avg(varName, periods)
+    # calculate yearly averages
+    key_metrics = self.key_metrics.order("date DESC")
+    # drop ttm metrics - only use annual reports for yearly averages
+    if key_metrics.first.ttm
+      key_metrics = key_metrics.drop(1)
+    end
+    # make sure there is enough data to calculate over n periods
+    if key_metrics.size < periods
+      return nil
+    end
+    avg = 0.0
+    n = 0
+    key_metrics.each do |metric|
+      n += 1
+      break if n > periods
+      unless metric[varName].nil?
+        avg += metric[varName]
+      end
+    end
+    avg = avg / periods
+    avg
+  end
   
   def apiCall(request:, period: 'year', limit: 20)
     url = "https://fmpcloud.io/api/v3/#{request}/#{self.symbol}?apikey=#{$apiKey}&limit=#{limit}&period=#{period}"

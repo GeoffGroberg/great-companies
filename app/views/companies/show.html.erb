@@ -21,47 +21,84 @@
   <%= number_with_precision(@company.price, precision: 2) %>
 </p>
 
-<table class="financials">
-	<caption>Annual Key Financials</caption>
+<table class="metrics">
+	<caption>Averages (per share)</caption>
+	<thead>
+		<tr>
+			<th scope="col">Revenue 10</th>
+			<th scope="col">Revenue 5</th>
+			<th scope="col">Revenue 2</th>
+			<th scope="col">EPS 10</th>
+			<th scope="col">EPS 5</th>
+			<th scope="col">EPS 2</th>
+			<th scope="col">FCF 10</th>
+			<th scope="col">FCF 5</th>
+			<th scope="col">FCF 2</th>
+			<th scope="col">Equity 10</th>
+			<th scope="col">Equity 5</th>
+			<th scope="col">Equity 2</th>
+			<th scope="col">ROIC 10</th>
+			<th scope="col">ROIC 5</th>
+			<th scope="col">ROIC 2</th>
+		</tr>
+	</thead>
+	<tbody>
+		<tr>
+			<td><%= number_to_percentage(@company.revenue_avg_growth10, precision: 1) %></td>
+			<td><%= number_to_percentage(@company.revenue_avg_growth5, precision: 1) %></td>
+			<td><%= number_to_percentage(@company.revenue_avg_growth2, precision: 1) %></td>
+			<td><%= number_to_percentage(@company.eps_avg_growth10, precision: 1) %></td>
+			<td><%= number_to_percentage(@company.eps_avg_growth5, precision: 1) %></td>
+			<td><%= number_to_percentage(@company.eps_avg_growth2, precision: 1) %></td>
+			<td><%= number_to_percentage(@company.free_cash_flow_avg_growth10, precision: 1) %></td>
+			<td><%= number_to_percentage(@company.free_cash_flow_avg_growth5, precision: 1) %></td>
+			<td><%= number_to_percentage(@company.free_cash_flow_avg_growth2, precision: 1) %></td>
+			<td><%= number_to_percentage(@company.equity_avg_growth10, precision: 1) %></td>
+			<td><%= number_to_percentage(@company.equity_avg_growth5, precision: 1) %></td>
+			<td><%= number_to_percentage(@company.equity_avg_growth2, precision: 1) %></td>
+			<td><%= number_to_percentage(@company.roic_avg10, precision: 1) %></td>
+			<td><%= number_to_percentage(@company.roic_avg5, precision: 1) %></td>
+			<td><%= number_to_percentage(@company.roic_avg2, precision: 1) %></td>
+		</tr>
+	</tbody>
+</table>
+
+<table class="metrics">
+	<caption>Key Metrics (per share)</caption>
 	<thead>
 		<tr>
 			<th scope="col">Date</th>
-			<th scope="col">Equity</th>
-			<th scope="col">EPS</th>
 			<th scope="col">Revenue</th>
+			<th scope="col">EPS</th>
 			<th scope="col">FCF</th>
+			<th scope="col">Equity</th>
+
 			<th scope="col">Debt</th>
-			<th scope="col">ROIC</th>
-			<th scope="col">Equity Growth</th>
-			<th scope="col">EPS Growth</th>
 			<th scope="col">Revenue Growth</th>
+			<th scope="col">EPS Growth</th>
 			<th scope="col">FCF Growth</th>
+			<th scope="col">Equity Growth</th>
+			<th scope="col">ROIC</th>
 		</tr>
 	</thead>
 	<tbody>
 	<% @company.key_metrics.order("date DESC").each_with_index do |v, k| %>
 		<% unless k > 10 %>
 		<tr class="<%= v.ttm ? 'ttm' : '' %>">
-			<td><%= v.date %></td>
-			<td><%= number_with_precision(v.equity, precision: 1) %></td>
-			<td><%= number_with_precision(v.eps, precision: 1) %></td>
+		<% if @company.key_metrics.size > k + 1 %>
+			<td><%= v.ttm ? "TTM " + v.date.to_s : v.date %></td>
 			<td><%= number_with_precision(v.revenue, precision: 1) %></td>
+			<td><%= number_with_precision(v.eps, precision: 1) %></td>
 			<td><%= number_with_precision(v.free_cash_flow, precision: 1) %></td>
-			<td><%= number_with_precision(v.debt_ratio, precision: 1) %></td>
+			<td><%= number_with_precision(v.equity, precision: 1) %></td>
+
+			<td class="key"><%= number_with_precision(v.debt_ratio, precision: 1) %></td>
+			<td class="key"><%= number_to_percentage(v.revenue_growth, precision: 1) %></td>
+			<td class="key"><%= number_to_percentage(v.eps_growth, precision: 1) %></td>
+			<td class="key"><%= number_to_percentage(v.free_cash_flow_growth, precision: 1) %></td>
+			<td class="key"><%= number_to_percentage(v.equity_growth, precision: 1) %></td>
 			<td class="key"><%= number_to_percentage(v.roic, precision: 1) %></td>
-			<!-- growth -->
-			<% if @company.key_metrics.size > k + 1 %>
-				<% prev = @company.key_metrics[k + 1] %>
-				<td class="key"><%= number_to_percentage(((v.equity / prev.equity) - 1) * 100, precision: 1) %></td>
-				<td class="key"><%= number_to_percentage(((v.eps / prev.eps) - 1) * 100, precision: 1) %></td>
-				<td class="key"><%= number_to_percentage(((v.revenue / prev.revenue) - 1) * 100, precision: 1) %></td>
-				<td class="key"><%= number_to_percentage(((v.free_cash_flow / prev.free_cash_flow) - 1) * 100, precision: 1) %></td>
-			<% else %>
-				<!-- <td></td>
-				<td></td>
-				<td></td>
-				<td></td> -->
-			<% end %>
+		<% end %>
 		</tr>
 		<% end %>
 	<% end %>

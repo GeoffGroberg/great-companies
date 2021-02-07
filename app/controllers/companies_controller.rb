@@ -42,6 +42,14 @@ class CompaniesController < ApplicationController
     end
   end
 
+  def updateAllCompanies
+    UpdateAllCompaniesJob.perform_later
+    respond_to do |format|
+      format.html { redirect_to companies_url, notice: "Updating companies..." }
+      format.json { head :no_content }
+    end
+  end
+
   # PATCH/PUT /companies/1 or /companies/1.json
   def update
     respond_to do |format|
