@@ -1,16 +1,10 @@
 <p id="notice"><%= notice %></p>
 
-<p>
-  <strong>Symbol:</strong>
-  <%= @company.symbol %>
-</p>
-<p>
-  <strong>Name:</strong>
-  <%= @company.name %>
-</p>
+<h2><%= @company.symbol %> - <%= @company.name %></h2>
+
 <p>
   <strong>IPO Date:</strong>
-  <%= @company.ipoDate %>
+  <%= @company.ipoDate %> (<%= @company.exchangeShortName %>)
 </p>
 <p>
   <strong>Description:</strong>

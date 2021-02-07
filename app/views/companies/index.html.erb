@@ -1,19 +1,19 @@
 <p id="notice"><%= notice %></p>
 
-<h1>Companies</h1>
-<p><%= link_to 'Update All Companies', updateAllCompanies_url, data: { confirm: 'Are you sure?' } %></p>
+<h1>All Companies</h1>
+<p><%= link_to 'Pull Financials for All Companies', updateAllCompanies_url, data: { confirm: 'Are you sure?' } %></p>
 
 <table class="summary">
   <thead>
     <tr>
-      <th>Symbol</th>
-      <!-- <th>Name</th> -->
+      <th></th>
       <th>Debt</th>
       <th>Revenue</th>
       <th>EPS</th>
       <th>FCF</th>
       <th>Equity</th>
       <th>ROIC</th>
+      <th></th>
       <!-- <th colspan="3"></th> -->
     </tr>
   </thead>
@@ -36,6 +36,8 @@
         <td class="<%= fcf.to_f > 15.0 ? 'yes' : fcf ? 'no' : '' %>"><%= fcf %></td>
         <td class="<%= equity.to_f > 15.0 ? 'yes' : equity ? 'no' : '' %>"><%= equity %></td>
         <td class="<%= roic.to_f > 15.0 ? 'yes' : roic ? 'no' : '' %>"><%= roic %></td>
+		
+		<td class="great_company"><%= link_to 'G', company %></td>
         <!-- <td><%= link_to 'Show', company %></td> -->
         <!-- <td><%= link_to 'Edit', edit_company_path(company) %></td> -->
         <!-- <td><%= link_to 'Destroy', company, method: :delete, data: { confirm: 'Are you sure?' } %></td> -->
