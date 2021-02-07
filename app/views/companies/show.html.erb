@@ -79,7 +79,6 @@
 	<% @company.key_metrics.order("date DESC").each_with_index do |v, k| %>
 		<% unless k > 10 %>
 		<tr class="<%= v.ttm ? 'ttm' : '' %>">
-		<% if @company.key_metrics.size > k + 1 %>
 			<td><%= v.ttm ? "TTM " + v.date.to_s : v.date %></td>
 			<td><%= number_with_precision(v.revenue, precision: 1) %></td>
 			<td><%= number_with_precision(v.eps, precision: 1) %></td>
@@ -87,12 +86,18 @@
 			<td><%= number_with_precision(v.equity, precision: 1) %></td>
 
 			<td class="key"><%= number_with_precision(v.debt_ratio, precision: 1) %></td>
+		<% if @company.key_metrics.size > k + 1 %>
 			<td class="key"><%= number_to_percentage(v.revenue_growth, precision: 1) %></td>
 			<td class="key"><%= number_to_percentage(v.eps_growth, precision: 1) %></td>
 			<td class="key"><%= number_to_percentage(v.free_cash_flow_growth, precision: 1) %></td>
 			<td class="key"><%= number_to_percentage(v.equity_growth, precision: 1) %></td>
-			<td class="key"><%= number_to_percentage(v.roic, precision: 1) %></td>
+		<% else %>
+			<td></td>
+			<td></td>
+			<td></td>
+			<td></td>
 		<% end %>
+			<td class="key"><%= number_to_percentage(v.roic, precision: 1) %></td>
 		</tr>
 		<% end %>
 	<% end %>

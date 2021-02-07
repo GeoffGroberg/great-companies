@@ -63,7 +63,7 @@ class Company < ApplicationRecord
     end
     # update the ttm keyMetric
     # IMPORTANT: there should only ever be 1 key metric where ttm = true for a given company
-    if key_metrics_ttm.first
+    if key_metrics_ttm and key_metrics_ttm.first
       key_metrics_ttm = key_metrics_ttm.first
       key_metric_ttm = KeyMetric.find_or_create_by(company_id: self.id, ttm: true)
       key_metric_ttm.date = Date.today.to_s
@@ -110,7 +110,9 @@ class Company < ApplicationRecord
     self.revenue_avg_growth5 = avg('revenue_growth', 5)
     self.revenue_avg_growth2 = avg('revenue_growth', 2)
     # debt ratio
-    self.debt_ratio = key_metrics.first.debt_ratio
+    if key_metrics and key_metrics[1]
+      self.debt_ratio = key_metrics[1].debt_ratio
+    end
     self.save
   end
   
