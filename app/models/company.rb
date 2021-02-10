@@ -121,6 +121,9 @@ class Company < ApplicationRecord
   def avg(varName, periods)
     # calculate yearly averages
     key_metrics = self.key_metrics.order("date DESC")
+    unless key_metrics.first
+      return nil
+    end
     # drop ttm metrics - only use annual reports for yearly averages
     if key_metrics.first.ttm
       key_metrics = key_metrics.drop(1)

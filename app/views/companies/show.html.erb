@@ -19,40 +19,38 @@
 	<caption>Averages (per share)</caption>
 	<thead>
 		<tr>
-			<th scope="col">Revenue 10</th>
-			<th scope="col">Revenue 5</th>
-			<th scope="col">Revenue 2</th>
-			<th scope="col">EPS 10</th>
-			<th scope="col">EPS 5</th>
-			<th scope="col">EPS 2</th>
-			<th scope="col">FCF 10</th>
-			<th scope="col">FCF 5</th>
-			<th scope="col">FCF 2</th>
-			<th scope="col">Equity 10</th>
-			<th scope="col">Equity 5</th>
-			<th scope="col">Equity 2</th>
-			<th scope="col">ROIC 10</th>
-			<th scope="col">ROIC 5</th>
-			<th scope="col">ROIC 2</th>
+			<th scope="col"></th>
+			<th scope="col">Revenue</th>
+			<th scope="col">EPS</th>
+			<th scope="col">FCF</th>
+			<th scope="col">Equity</th>
+			<th scope="col">ROIC</th>
 		</tr>
 	</thead>
 	<tbody>
 		<tr>
-			<td><%= number_to_percentage(@company.revenue_avg_growth10, precision: 1) %></td>
-			<td><%= number_to_percentage(@company.revenue_avg_growth5, precision: 1) %></td>
+			<td>2 yr</td>
 			<td><%= number_to_percentage(@company.revenue_avg_growth2, precision: 1) %></td>
-			<td><%= number_to_percentage(@company.eps_avg_growth10, precision: 1) %></td>
-			<td><%= number_to_percentage(@company.eps_avg_growth5, precision: 1) %></td>
 			<td><%= number_to_percentage(@company.eps_avg_growth2, precision: 1) %></td>
-			<td><%= number_to_percentage(@company.free_cash_flow_avg_growth10, precision: 1) %></td>
-			<td><%= number_to_percentage(@company.free_cash_flow_avg_growth5, precision: 1) %></td>
 			<td><%= number_to_percentage(@company.free_cash_flow_avg_growth2, precision: 1) %></td>
-			<td><%= number_to_percentage(@company.equity_avg_growth10, precision: 1) %></td>
-			<td><%= number_to_percentage(@company.equity_avg_growth5, precision: 1) %></td>
 			<td><%= number_to_percentage(@company.equity_avg_growth2, precision: 1) %></td>
-			<td><%= number_to_percentage(@company.roic_avg10, precision: 1) %></td>
-			<td><%= number_to_percentage(@company.roic_avg5, precision: 1) %></td>
 			<td><%= number_to_percentage(@company.roic_avg2, precision: 1) %></td>
+		</tr>
+		<tr>
+			<td>5 yr</td>
+			<td><%= number_to_percentage(@company.revenue_avg_growth5, precision: 1) %></td>
+			<td><%= number_to_percentage(@company.eps_avg_growth5, precision: 1) %></td>
+			<td><%= number_to_percentage(@company.free_cash_flow_avg_growth5, precision: 1) %></td>
+			<td><%= number_to_percentage(@company.equity_avg_growth5, precision: 1) %></td>
+			<td><%= number_to_percentage(@company.roic_avg5, precision: 1) %></td>
+		</tr>
+		<tr>
+			<td>10 yr</td>
+			<td><%= number_to_percentage(@company.revenue_avg_growth10, precision: 1) %></td>
+			<td><%= number_to_percentage(@company.eps_avg_growth10, precision: 1) %></td>
+			<td><%= number_to_percentage(@company.free_cash_flow_avg_growth10, precision: 1) %></td>
+			<td><%= number_to_percentage(@company.equity_avg_growth10, precision: 1) %></td>
+			<td><%= number_to_percentage(@company.roic_avg10, precision: 1) %></td>
 		</tr>
 	</tbody>
 </table>
@@ -106,4 +104,9 @@
 
 <%= link_to 'Edit', edit_company_path(@company) %> |
 <%= link_to 'Back', companies_path %> |
-<%= link_to "Update Info", company_path(@company), method: :put %>
+<%= link_to "Update Financials", company_path(@company, pullFinancials: :true), method: :put %> |
+<% if @company.great %>
+<%= link_to "Unmark Great", company_path(@company, great: :false), method: :put %>
+<% else %>
+<%= link_to "Mark as Great", company_path(@company, great: :true), method: :put %>
+<% end %>

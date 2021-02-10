@@ -79,6 +79,9 @@ table.summary td.great_company a {
 	background: #eee;
 	padding: 1rem .8rem;
 }
+table.summary td.great_company.true a {
+	background: #ada;
+}
 table.summary td.great_company a:hover {
 	background: #ccc;
 }

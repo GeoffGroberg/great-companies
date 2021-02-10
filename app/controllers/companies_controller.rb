@@ -3,7 +3,7 @@ class CompaniesController < ApplicationController
 
   # GET /companies or /companies.json
   def index
-    @companies = Company.all
+    @companies = Company.where("roic_avg10 > 10 and equity_avg_growth10 > 10 and free_cash_flow_avg_growth10 > 10 and eps_avg_growth10 > 10 and revenue_avg_growth10 > 10")
   end
 
   # GET /companies/1 or /companies/1.json
@@ -53,7 +53,16 @@ class CompaniesController < ApplicationController
   # PATCH/PUT /companies/1 or /companies/1.json
   def update
     respond_to do |format|
-      if @company.pull
+      # if @company.pull
+      # if @company.save
+      if params['great']
+        @company.great = params['great']
+      end
+      if params['pullFinancials']
+        @company.pull
+      end
+      
+      if @company.save
         format.html { redirect_to @company, notice: "Company was successfully updated." }
         format.json { render :show, status: :ok, location: @company }
       else

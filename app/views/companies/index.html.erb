@@ -37,7 +37,7 @@
         <td class="<%= equity.to_f > 15.0 ? 'yes' : equity ? 'no' : '' %>"><%= equity %></td>
         <td class="<%= roic.to_f > 15.0 ? 'yes' : roic ? 'no' : '' %>"><%= roic %></td>
 		
-		<td class="great_company"><%= link_to 'G', company %></td>
+		<td class="great_company <%= company.great %>"><%= link_to 'G', company %></td>
         <!-- <td><%= link_to 'Show', company %></td> -->
         <!-- <td><%= link_to 'Edit', edit_company_path(company) %></td> -->
         <!-- <td><%= link_to 'Destroy', company, method: :delete, data: { confirm: 'Are you sure?' } %></td> -->
