@@ -1,7 +1,6 @@
 <p id="notice"><%= notice %></p>
 
-<h1>All Companies</h1>
-<p><%= link_to 'Pull Financials for All Companies', updateAllCompanies_url, data: { confirm: 'Are you sure?' } %></p>
+<h1><%= params['screen'] %></h1>
 
 <table class="summary">
   <thead>

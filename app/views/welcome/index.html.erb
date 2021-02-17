@@ -1,5 +1,5 @@
 <!-- home/root page -->
-<h1>Great Companies</h1>
+<h1>Home</h1>
 
 <h2>Screeners</h2>
 
@@ -13,3 +13,7 @@
 
 <br>
 <%= link_to "All", companies_path() %>
+
+
+<h2>Utilities</h2>
+<p><%= link_to 'Pull Financials for All Companies', updateAllCompanies_url, data: { confirm: 'Are you sure?' } %></p>
