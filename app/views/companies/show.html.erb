@@ -1,18 +1,34 @@
 <p id="notice"><%= notice %></p>
 
-<h2><%= @company.symbol %> - <%= @company.name %></h2>
+<h2><%= @company.symbol %> - <%= @company.name %> (<%= @company.exchangeShortName %>)</h2>
 
-<p>
-  <strong>IPO Date:</strong>
-  <%= @company.ipoDate %> (<%= @company.exchangeShortName %>)
-</p>
 <p>
   <strong>Description:</strong>
   <%= @company.description %>
 </p>
 <p>
+  <strong>IPO Date:</strong>
+  <%= @company.ipoDate %>
+</p>
+<p>
+  <strong>Market Cap:</strong>
+  <%= number_to_human(@company.mktCap) %>
+</p>
+<p>
   <strong>Price:</strong>
   <%= number_with_precision(@company.price, precision: 2) %>
+</p>
+<p>
+  <strong>Graham Number:</strong>
+  <%= number_with_precision(@company.graham_number, precision: 2) %>
+</p>
+<p>
+  <strong>Intrinsic Value:</strong>
+  <%= number_with_precision(@company.intrinsic_value, precision: 2) %>
+</p>
+<p>
+  <strong>PE Ratio:</strong>
+  <%= number_with_precision(@company.pe_ratio, precision: 2) %>
 </p>
 
 <table class="metrics">

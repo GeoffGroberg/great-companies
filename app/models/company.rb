@@ -58,6 +58,8 @@ class Company < ApplicationRecord
         key_metric.free_cash_flow = key_metrics[x-1]['freeCashFlowPerShare'].to_f
         longTermDebt = key_metrics[x-1]['interestDebtPerShare'].to_f
         key_metric.debt_ratio = longTermDebt / key_metric.free_cash_flow
+        key_metric.graham_number = key_metrics[x-1]['grahamNumber'].to_f
+        key_metric.pe_ratio = key_metrics[x-1]['peRatio'].to_f
         key_metric.save
       end
     end
@@ -74,11 +76,13 @@ class Company < ApplicationRecord
       key_metric_ttm.free_cash_flow = key_metrics_ttm['freeCashFlowPerShareTTM'].to_f
       longTermDebt = key_metrics_ttm['interestDebtPerShareTTM'].to_f
       key_metric_ttm.debt_ratio = longTermDebt / key_metric_ttm.free_cash_flow
+      key_metric_ttm.graham_number = key_metrics_ttm['grahamNumberTTM'].to_f
+      key_metric_ttm.pe_ratio = key_metrics_ttm['peRatioTTM'].to_f
       key_metric_ttm.save
     end
     return true
   end
-  
+    
   def calculate
     # run calculations on key metrics
     # yearly growth
@@ -96,25 +100,123 @@ class Company < ApplicationRecord
     # yearly averages
     self.roic_avg10 = avg('roic', 10)
     self.roic_avg5 = avg('roic', 5)
-    self.roic_avg2 = avg('roic', 2)
+    self.roic_avg2 = avg('roic', 3)
     self.equity_avg_growth10 = avg('equity_growth', 10)
     self.equity_avg_growth5 = avg('equity_growth', 5)
-    self.equity_avg_growth2 = avg('equity_growth', 2)
+    self.equity_avg_growth2 = avg('equity_growth', 3)
     self.free_cash_flow_avg_growth10 = avg('free_cash_flow_growth', 10)
     self.free_cash_flow_avg_growth5 = avg('free_cash_flow_growth', 5)
-    self.free_cash_flow_avg_growth2 = avg('free_cash_flow_growth', 2)
+    self.free_cash_flow_avg_growth2 = avg('free_cash_flow_growth', 3)
     self.eps_avg_growth10 = avg('eps_growth', 10)
     self.eps_avg_growth5 = avg('eps_growth', 5)
-    self.eps_avg_growth2 = avg('eps_growth', 2)
+    self.eps_avg_growth2 = avg('eps_growth', 3)
     self.revenue_avg_growth10 = avg('revenue_growth', 10)
     self.revenue_avg_growth5 = avg('revenue_growth', 5)
-    self.revenue_avg_growth2 = avg('revenue_growth', 2)
+    self.revenue_avg_growth2 = avg('revenue_growth', 3)
     # debt ratio
     if key_metrics and key_metrics[1]
       self.debt_ratio = key_metrics[1].debt_ratio
     end
+    # graham number
+    if key_metrics and key_metrics[1]
+      self.graham_number = key_metrics[1].graham_number
+    end
+    # intrinsic value
+    self.intrinsic_value = self.intrinsicValue
+    # pe ratio
+    if key_metrics and key_metrics.first
+      self.pe_ratio = key_metrics.first.pe_ratio
+    end
+    
     self.save
   end
+
+  def intrinsicValue
+    futureGrowthRate = self.futureGrowthRate
+    unless futureGrowthRate
+      return nil
+    end
+    # calculate future free cash flow
+    y = 0
+
+    key_metrics = self.key_metrics.order("date DESC")
+    unless key_metrics.first
+      return nil
+    end
+    # drop ttm metrics - only use annual reports
+    if key_metrics.first.ttm
+      key_metrics = key_metrics.drop(1)
+    end
+
+    freeCashFlow = key_metrics[1]['free_cash_flow'].to_f
+    # puts "freeCashFlow: #{freeCashFlow}"
+    futureFCF = []
+    r = futureGrowthRate
+    while y < 10
+      y += 1
+      freeCashFlow = freeCashFlow * (1+r)
+      futureFCF << freeCashFlow
+    end
+    futureFCF << futureFCF.last * 10
+    
+    # discount the future FCF by 15%
+    dFCFs = []
+    r = 0.15
+    y = 0
+    futureFCF.each do |freeCashFlow|
+      y += 1
+      dFCF = futureFCF[y-1] / ((1 + r)**y)
+      dFCFs << dFCF
+    end
+    dFCFs.pop # drop the last item
+    dFCFs << dFCFs.last * 10
+    # puts "---"
+    # puts dFCFs
+    intrinsicValue = dFCFs.last
+    intrinsicValue
+  end
+  
+  def futureGrowthRate
+    # if self.roic_avg10 and self.equity_avg_growth10 and self.free_cash_flow_avg_growth10 and self.eps_avg_growth10 and self.revenue_avg_growth10
+    #   futureGrowthRate = self.roic_avg10 + self.equity_avg_growth10 + self.free_cash_flow_avg_growth10 + self.eps_avg_growth10 + self.revenue_avg_growth10
+    # elsif self.roic_avg5 and self.equity_avg_growth5 and self.free_cash_flow_avg_growth5 and self.eps_avg_growth5 and self.revenue_avg_growth5
+    #   futureGrowthRate = self.roic_avg5 + self.equity_avg_growth5 + self.free_cash_flow_avg_growth5 + self.eps_avg_growth5 + self.revenue_avg_growth5
+    # else
+    #   return nil
+    # end
+    # futureGrowthRate = futureGrowthRate / 5
+    # futureGrowthRate = futureGrowthRate / 100 # convert into decimal instead of percent
+    # futureGrowthRate
+    
+    growthRates = []
+    if self.roic_avg10
+      growthRates << self.roic_avg10
+    end
+    if self.roic_avg5
+      growthRates << self.roic_avg5
+    end
+    if self.roic_avg2
+      growthRates << self.roic_avg2
+    else
+      return nil
+    end
+    futureGrowthRate = growthRates.min / 100
+    
+    # futureGrowthRate = 0.35
+  end
+  
+  def discount
+    if self.intrinsic_value and self.price
+      discount = ((self.intrinsic_value / self.price) - 1) * 100
+      if discount > 100 or discount < -100
+        discount = nil
+      end
+    else
+      discount = nil
+    end
+    discount
+  end
+  
   
   private
   
@@ -124,24 +226,34 @@ class Company < ApplicationRecord
     unless key_metrics.first
       return nil
     end
-    # drop ttm metrics - only use annual reports for yearly averages
-    if key_metrics.first.ttm
+    # drop ttm metrics for periods > 3
+    if periods > 3 and key_metrics.first.ttm
       key_metrics = key_metrics.drop(1)
     end
     # make sure there is enough data to calculate over n periods
     if key_metrics.size < periods
       return nil
     end
-    avg = 0.0
+    metrics = []
     n = 0
     key_metrics.each do |metric|
       n += 1
       break if n > periods
       unless metric[varName].nil?
-        avg += metric[varName]
+        metrics << metric[varName]
       end
     end
-    avg = avg / periods
+    if periods >= 10 # for periods >= 10, drop hi and low
+      metrics.delete(metrics.max)
+      metrics.delete(metrics.min)
+    elsif periods >= 5 # for periods >= 5, drop hi
+    # else # drop hi
+      metrics.delete(metrics.max)
+    end
+    if metrics.length == 0
+      return nil
+    end
+    avg = metrics.sum / metrics.length
     avg
   end
   

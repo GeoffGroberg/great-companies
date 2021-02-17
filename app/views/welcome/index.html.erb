@@ -1,2 +1,15 @@
 <!-- home/root page -->
 <h1>Great Companies</h1>
+
+<h2>Screeners</h2>
+
+<%= link_to "Big 5", companies_path(screen: :big5) %>
+<br>
+<%= link_to "Big 5 Intrinsic Value Discounted", companies_path(screen: "big5 intrinsic value discounted") %>
+<br>
+<%= link_to "Great", companies_path(screen: :great) %>
+<br>
+<%= link_to "intrinsic value discounted", companies_path(screen: "intrinsic value discounted") %>
+
+<br>
+<%= link_to "All", companies_path() %>

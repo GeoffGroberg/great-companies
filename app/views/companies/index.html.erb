@@ -14,6 +14,7 @@
       <th>Equity</th>
       <th>ROIC</th>
       <th></th>
+      <th>Discount</th>
       <!-- <th colspan="3"></th> -->
     </tr>
   </thead>
@@ -38,6 +39,7 @@
         <td class="<%= roic.to_f > 15.0 ? 'yes' : roic ? 'no' : '' %>"><%= roic %></td>
 		
 		<td class="great_company <%= company.great %>"><%= link_to 'G', company %></td>
+		<td><%= number_with_precision(company.discount, precision: 1) %>%</td>
         <!-- <td><%= link_to 'Show', company %></td> -->
         <!-- <td><%= link_to 'Edit', edit_company_path(company) %></td> -->
         <!-- <td><%= link_to 'Destroy', company, method: :delete, data: { confirm: 'Are you sure?' } %></td> -->
