@@ -151,7 +151,12 @@ class Company < ApplicationRecord
       key_metrics = key_metrics.drop(1)
     end
 
-    freeCashFlow = key_metrics[1]['free_cash_flow'].to_f
+    # freeCashFlow = key_metrics[0]['free_cash_flow'].to_f
+    # average free cash flow over past 3 years
+    if key_metrics.length < 3
+      return nil
+    end
+    freeCashFlow = (key_metrics[0]['free_cash_flow'].to_f + key_metrics[1]['free_cash_flow'].to_f + key_metrics[2]['free_cash_flow'].to_f) / 3
     puts "---"
     puts "freeCashFlow: #{freeCashFlow}"
     futureFCF = []
