@@ -1,3 +1,169 @@
 // Place all the styles related to the Companies controller here.
 // They will automatically be included in application.css.
 // You can use Sass (SCSS) here: https://sass-lang.com/
+
+
+/* "temperature" for big 5 percentages */
+$green: hsl(130, 70%, 70%);
+$red: hsl(0, 80%, 70%);
+$t10: $green;
+$t9: scale_color($green, $saturation: -10%, $lightness: 10%);
+$t8: scale_color($green, $saturation: -20%, $lightness: 20%);
+$t7: scale_color($green, $saturation: -30%, $lightness: 30%);
+$t6: scale_color($green, $saturation: -40%, $lightness: 40%);
+$t5: scale_color($green, $saturation: -50%, $lightness: 40%);
+$t4: scale_color($green, $saturation: -60%, $lightness: 40%);
+$t3: scale_color($green, $saturation: -70%, $lightness: 40%);
+$t2: scale_color($green, $saturation: -80%, $lightness: 40%);
+$t1: scale_color($green, $saturation: -90%, $lightness: 40%);
+$t0: scale_color($green, $saturation: -100%, $lightness: 40%);
+$t-1: scale_color($red, $saturation: -90%, $lightness: 40%);
+$t-2: scale_color($red, $saturation: -80%, $lightness: 40%);
+$t-3: scale_color($red, $saturation: -70%, $lightness: 40%);
+$t-4: scale_color($red, $saturation: -60%, $lightness: 40%);
+$t-5: scale_color($red, $saturation: -50%, $lightness: 40%);
+$t-6: scale_color($red, $saturation: -40%, $lightness: 40%);
+$t-7: scale_color($red, $saturation: -30%, $lightness: 30%);
+$t-8: scale_color($red, $saturation: -20%, $lightness: 20%);
+$t-9: scale_color($red, $saturation: -10%, $lightness: 10%);
+$t-10: $red;
+
+
+td.t10 {
+	background: $t10;
+}
+td.t9 {
+	background: $t9;
+}
+td.t8 {
+	background: $t8;
+}
+td.t7 {
+	background: $t7;
+}
+td.t6 {
+	background: $t6;
+}
+td.t5 {
+	background: $t5;
+}
+td.t4 {
+	background: $t4;
+}
+td.t3 {
+	background: $t3;
+}
+td.t2 {
+	background: $t2;
+}
+td.t1 {
+	background: $t1;
+}
+td.t0 {
+	background: $t0;
+}
+td.t-1 {
+	background: $t-1;
+}
+td.t-2 {
+	background: $t-2;
+}
+td.t-3 {
+	background: $t-3;
+}
+td.t-4 {
+	background: $t-4;
+}
+td.t-5 {
+	background: $t-5;
+}
+td.t-6 {
+	background: $t-6;
+}
+td.t-7 {
+	background: $t-7;
+}
+td.t-8 {
+	background: $t-8;
+}
+td.t-9 {
+	background: $t-9;
+}
+td.t-10 {
+	background: $t-10;
+}
+
+
+/* financial tables */
+th {
+	font-weight: normal;
+	background: #fff;
+	margin: 0;
+	padding: .2rem;
+	color: #aaa;
+}
+table.metrics {
+	margin: 1rem 0;
+}
+table.metrics caption {
+	font-size: 1rem;
+	font-weight: bold;
+	text-align: left;
+	margin: .5rem 0;
+}
+table.metrics tr.ttm td {
+	background: #ddd;
+	text-align: right;
+}
+table.metrics td {
+	background: #eee;
+	text-align: right;
+	margin: 0;
+	padding: 1px 3px;
+}
+table.metrics td.key {
+/*	background: #fff;*/
+	font-weight: bold;
+}
+
+table.summary td {
+/*	background: #eee;*/
+	text-align: center;
+	margin: 0;
+	padding: 0 .5rem;
+	font-size: .9rem;
+}
+table td.yes {
+	background: $green;
+}
+table td.no {
+	background: $red;
+}
+table.summary td.symbol {
+	background: initial;
+	margin: 0;
+	padding: 0;
+}
+table.summary a {
+	text-decoration: none;
+	display: block;
+	padding: 1rem .1rem;
+	font-size: 1.3rem;
+}
+table.summary td.great_company {
+	margin: 0;
+	padding: 0;
+}
+table.summary td.great_company a {
+	font-size: 2rem;
+	font-weight: bold;
+	color: #fff;
+	background: #eee;
+	padding: 1rem .8rem;
+}
+table.summary td.great_company.true a {
+	background: $green;
+}
+table.summary td.great_company a:hover {
+	background: #ccc;
+}

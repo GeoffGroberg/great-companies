@@ -30,12 +30,12 @@
 		equity = number_with_precision(company.equity_avg_growth5, precision: 1)
 		roic = number_with_precision(company.roic_avg5, precision: 1)
 		%>
-        <td class="<%= debt.to_f > 5.0 ? 'no' : debt.to_f < 0.0 ? 'no' : debt ? 'yes' : '' %>"><%= debt %></td>
-        <td class="<%= revenue.to_f > 15.0 ? 'yes' : revenue ? 'no' : '' %>"><%= revenue %></td>
-        <td class="<%= eps.to_f > 15.0 ? 'yes' : eps ? 'no' : '' %>"><%= eps %></td>
-        <td class="<%= fcf.to_f > 15.0 ? 'yes' : fcf ? 'no' : '' %>"><%= fcf %></td>
-        <td class="<%= equity.to_f > 15.0 ? 'yes' : equity ? 'no' : '' %>"><%= equity %></td>
-        <td class="<%= roic.to_f > 15.0 ? 'yes' : roic ? 'no' : '' %>"><%= roic %></td>
+        <td class="<%= debt_temperature(debt.to_f) %>"><%= debt %></td>
+        <td class="<%= big5_temperature(revenue.to_f) %>"><%= revenue %></td>
+        <td class="<%= big5_temperature(eps.to_f) %>"><%= eps %></td>
+        <td class="<%= big5_temperature(fcf.to_f) %>"><%= fcf %></td>
+        <td class="<%= big5_temperature(equity.to_f) %>"><%= equity %></td>
+        <td class="<%= big5_temperature(roic.to_f) %>"><%= roic %></td>
 		
 		<td class="great_company <%= company.great %>"><%= link_to 'G', company %></td>
 		<td><%= number_with_precision(company.discount, precision: 1) %>%</td>
