@@ -136,6 +136,8 @@ class Company < ApplicationRecord
     unless futureGrowthRate
       return nil
     end
+    puts "---"
+    puts "futureGrowthRate: #{futureGrowthRate}"
     # calculate future free cash flow
     y = 0
 
@@ -149,7 +151,8 @@ class Company < ApplicationRecord
     end
 
     freeCashFlow = key_metrics[1]['free_cash_flow'].to_f
-    # puts "freeCashFlow: #{freeCashFlow}"
+    puts "---"
+    puts "freeCashFlow: #{freeCashFlow}"
     futureFCF = []
     r = futureGrowthRate
     while y < 10
@@ -170,8 +173,10 @@ class Company < ApplicationRecord
     end
     dFCFs.pop # drop the last item
     dFCFs << dFCFs.last * 10
-    # puts "---"
-    # puts dFCFs
+    dFCFs.each do |test|
+      puts "---"
+      puts "dFCF: #{test}"
+    end
     intrinsicValue = dFCFs.last
     intrinsicValue
   end
@@ -201,14 +206,16 @@ class Company < ApplicationRecord
       return nil
     end
     futureGrowthRate = growthRates.min / 100
-    
-    # futureGrowthRate = 0.35
+    if futureGrowthRate <= -1.0
+      futureGrowthRate = -1.0
+    end
+    futureGrowthRate
   end
   
   def discount
     if self.intrinsic_value and self.price
-      discount = ((self.intrinsic_value / self.price) - 1) * 100
-      if discount > 100 or discount < -100
+      discount = (1 - (self.price / self.intrinsic_value)) * 100
+      if discount < -900
         discount = nil
       end
     else

@@ -5,14 +5,14 @@ class CompaniesController < ApplicationController
   def index
     if params['screen']
       case params['screen']
-      when "big5"
-        @companies = Company.where("roic_avg10 > 10 and equity_avg_growth10 > 10 and free_cash_flow_avg_growth10 > 10 and eps_avg_growth10 > 10 and revenue_avg_growth10 > 10")
-      when "big5 intrinsic value discounted"
-        @companies = Company.where("roic_avg10 > 10 and equity_avg_growth10 > 10 and free_cash_flow_avg_growth10 > 10 and eps_avg_growth10 > 10 and revenue_avg_growth10 > 10 and price <= intrinsic_value")
-      when "great"
+      when "Great Companies"
         @companies = Company.where("great = true")
-      when "intrinsic value discounted"
-        @companies = Company.where("price <= intrinsic_value")
+      when "Big 5"
+        @companies = Company.where("roic_avg10 > 10 and equity_avg_growth10 > 10 and free_cash_flow_avg_growth10 > 10 and eps_avg_growth10 > 10 and revenue_avg_growth10 > 10")
+      when "Big 5 Intrinsic Value Discounted"
+        @companies = Company.where("roic_avg10 > 10 and equity_avg_growth10 > 10 and free_cash_flow_avg_growth10 > 10 and eps_avg_growth10 > 10 and revenue_avg_growth10 > 10 and price <= intrinsic_value")
+      when "Intrinsic Value Discounted"
+        @companies = Company.where('price < intrinsic_value').order(Arel.sql('price / intrinsic_value ASC'))
       # else
       #   @companies = Company.all
       end
