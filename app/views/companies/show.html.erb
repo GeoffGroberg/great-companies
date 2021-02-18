@@ -118,13 +118,12 @@
 	</tbody>
 </table>
 
-<p>
-  <strong>Notes:</strong>
+<div class='notes'>
+<h3>Notes:</h3>
 
- 	<%= render 'notes/new', company: @company %>
- 	<%= render @company.notes %>
-</p>
-
+<%= render @company.notes %>
+<%= render 'notes/new', company: @company %>
+</div>
 
 <%= link_to 'Edit', edit_company_path(@company) %> |
 <%= link_to 'Back', companies_path %> |

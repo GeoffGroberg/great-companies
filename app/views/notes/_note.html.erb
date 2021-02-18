@@ -1,7 +1,7 @@
-<p>
+<div class='note'>
 	<strong><%= note.created_at.to_s(:long) %></strong> |
 	<%= link_to 'Destroy', [note.company, note], method: :delete, data: { confirm: 'Are you sure?' } %> |
 	<%= link_to 'Edit', edit_company_note_path(note.company, note) %>
-	<br>
-	<%= note.body %>
-</p>
+
+	<%= simple_format(note.body) %>
+</div>
