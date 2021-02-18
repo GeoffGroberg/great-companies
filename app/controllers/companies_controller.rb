@@ -12,7 +12,7 @@ class CompaniesController < ApplicationController
       when "Big 5 Intrinsic Value Discounted"
         @companies = Company.where("roic_avg10 > 10 and equity_avg_growth10 > 10 and free_cash_flow_avg_growth10 > 10 and eps_avg_growth10 > 10 and revenue_avg_growth10 > 10 and price <= intrinsic_value")
       when "Intrinsic Value Discounted"
-        @companies = Company.where('price < intrinsic_value').order(Arel.sql('price / intrinsic_value ASC'))
+        @companies = Company.where('price > 0 and price < intrinsic_value').order(Arel.sql('price / intrinsic_value ASC'))
       # else
       #   @companies = Company.all
       end

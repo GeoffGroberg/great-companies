@@ -1,5 +1,7 @@
 Rails.application.routes.draw do
-  resources :companies
+  resources :companies do
+    resources :notes
+  end
   # get '/company/:id/updateFinancials', to: 'companies#updateFinancials', as: 'updateFinancials'
   get '/company/addUSCompanies', to: 'companies#addUSCompanies', as: 'addUSCompanies'
   get '/company/updateAllCompanies', to: 'companies#updateAllCompanies', as: 'updateAllCompanies'

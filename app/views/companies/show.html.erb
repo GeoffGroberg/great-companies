@@ -118,6 +118,14 @@
 	</tbody>
 </table>
 
+<p>
+  <strong>Notes:</strong>
+
+ 	<%= render 'notes/new', company: @company %>
+ 	<%= render @company.notes %>
+</p>
+
+
 <%= link_to 'Edit', edit_company_path(@company) %> |
 <%= link_to 'Back', companies_path %> |
 <%= link_to "Update Financials", company_path(@company, pullFinancials: :true), method: :put %> |

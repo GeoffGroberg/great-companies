@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_02_17_035152) do
+ActiveRecord::Schema.define(version: 2021_02_18_023309) do
 
   create_table "companies", force: :cascade do |t|
     t.text "symbol"
@@ -71,5 +71,14 @@ ActiveRecord::Schema.define(version: 2021_02_17_035152) do
     t.index ["company_id"], name: "index_key_metrics_on_company_id"
   end
 
+  create_table "notes", force: :cascade do |t|
+    t.text "body"
+    t.integer "company_id", null: false
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["company_id"], name: "index_notes_on_company_id"
+  end
+
   add_foreign_key "key_metrics", "companies"
+  add_foreign_key "notes", "companies"
 end
