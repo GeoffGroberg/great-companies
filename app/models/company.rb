@@ -132,90 +132,144 @@ class Company < ApplicationRecord
     self.save
   end
 
+  # def intrinsicValue
+  #   epsGrowthRate = self.epsGrowthRate
+  #   unless epsGrowthRate
+  #     return nil
+  #   end
+  #   # puts "---"
+  #   # puts "epsGrowthRate: #{epsGrowthRate}"
+  #   # calculate future free cash flow
+  #   y = 0
+  #
+  #   key_metrics = self.key_metrics.order("date DESC")
+  #   unless key_metrics.first
+  #     return nil
+  #   end
+  #   # drop ttm metrics - only use annual reports
+  #   if key_metrics.first.ttm
+  #     key_metrics = key_metrics.drop(1)
+  #   end
+  #
+  #   # freeCashFlow = key_metrics[0]['free_cash_flow'].to_f
+  #   # average free cash flow over past 3 years
+  #   if key_metrics.length < 3
+  #     return nil
+  #   end
+  #   freeCashFlow = (key_metrics[0]['free_cash_flow'].to_f + key_metrics[1]['free_cash_flow'].to_f + key_metrics[2]['free_cash_flow'].to_f) / 3
+  #   # puts "---"
+  #   # puts "freeCashFlow: #{freeCashFlow}"
+  #   futureFCF = []
+  #   r = epsGrowthRate
+  #   while y < 10
+  #     y += 1
+  #     freeCashFlow = freeCashFlow * (1+r)
+  #     futureFCF << freeCashFlow
+  #   end
+  #   futureFCF << futureFCF.last * 10
+  #
+  #   # discount the future FCF by 15%
+  #   dFCFs = []
+  #   r = 0.15
+  #   y = 0
+  #   futureFCF.each do |freeCashFlow|
+  #     y += 1
+  #     dFCF = futureFCF[y-1] / ((1 + r)**y)
+  #     dFCFs << dFCF
+  #   end
+  #   dFCFs.pop # drop the last item
+  #   dFCFs << dFCFs.last * 10
+  #   # dFCFs.each do |test|
+  #   #   puts "---"
+  #   #   puts "dFCF: #{test}"
+  #   # end
+  #   intrinsicValue = dFCFs.last
+  #   intrinsicValue
+  # end
+  
   def intrinsicValue
-    futureGrowthRate = self.futureGrowthRate
-    unless futureGrowthRate
+    
+    # eps Growth Rate
+    epsGrowthRate = self.epsGrowthRate.to_f
+    unless epsGrowthRate
       return nil
     end
     puts "---"
-    puts "futureGrowthRate: #{futureGrowthRate}"
-    # calculate future free cash flow
-    y = 0
+    puts "epsGrowthRate: #{epsGrowthRate}"
 
     key_metrics = self.key_metrics.order("date DESC")
-    unless key_metrics.first
+    if key_metrics.length < 4 # require at least 4 key metrics (3 year + 1 ttm)
       return nil
     end
-    # drop ttm metrics - only use annual reports
+    
+    # current EPS
+    currentEPS = key_metrics[0]['eps'].to_f
+    puts "---"
+    puts "currentEPS: #{currentEPS}"
+    
+    # after getting the current EPS we can drop ttm metrics - only use annual reports
     if key_metrics.first.ttm
       key_metrics = key_metrics.drop(1)
     end
 
-    # freeCashFlow = key_metrics[0]['free_cash_flow'].to_f
-    # average free cash flow over past 3 years
-    if key_metrics.length < 3
-      return nil
-    end
-    freeCashFlow = (key_metrics[0]['free_cash_flow'].to_f + key_metrics[1]['free_cash_flow'].to_f + key_metrics[2]['free_cash_flow'].to_f) / 3
+    # default PE
+    defaultPE = epsGrowthRate
     puts "---"
-    puts "freeCashFlow: #{freeCashFlow}"
-    futureFCF = []
-    r = futureGrowthRate
+    puts "defaultPE: #{defaultPE}"
+    
+    # average historical PE
+    avgPE = 0.0
+    y = 0
+    key_metrics.each do |m|
+      y += 1
+      avgPE += m['pe_ratio']
+      break if y >= 10
+    end
+    avgPE = avgPE / 10
+    puts "---"
+    puts "avgPE: #{avgPE}"
+
+    # future PE
+    futurePE = [defaultPE, avgPE].min * 2
+    puts "---"
+    puts "futurePE: #{futurePE}"
+    
+    # future EPS 10 years from now
+    futureEPS = currentEPS
+    r = epsGrowthRate / 100 # convert percent to decimal
+    y = 0
     while y < 10
       y += 1
-      freeCashFlow = freeCashFlow * (1+r)
-      futureFCF << freeCashFlow
+      futureEPS = futureEPS * (1 + r)
     end
-    futureFCF << futureFCF.last * 10
+    puts "---"
+    puts "futureEPS: #{futureEPS}"
+
+    # future price
+    futurePrice = futureEPS * futurePE
+    puts "---"
+    puts "futurePrice: #{futurePrice}"
     
-    # discount the future FCF by 15%
-    dFCFs = []
+    # discount the future price by 15% for 10 years
+    intrinsicValue = futurePrice
     r = 0.15
     y = 0
-    futureFCF.each do |freeCashFlow|
+    while y < 10
       y += 1
-      dFCF = futureFCF[y-1] / ((1 + r)**y)
-      dFCFs << dFCF
+      intrinsicValue = intrinsicValue * (1 - r)
     end
-    dFCFs.pop # drop the last item
-    dFCFs << dFCFs.last * 10
-    dFCFs.each do |test|
-      puts "---"
-      puts "dFCF: #{test}"
-    end
-    intrinsicValue = dFCFs.last
+    puts "---"
+    puts "intrinsicValue: #{intrinsicValue}"
+    
     intrinsicValue
   end
-  
-  def futureGrowthRate
-    # if self.roic_avg10 and self.equity_avg_growth10 and self.free_cash_flow_avg_growth10 and self.eps_avg_growth10 and self.revenue_avg_growth10
-    #   futureGrowthRate = self.roic_avg10 + self.equity_avg_growth10 + self.free_cash_flow_avg_growth10 + self.eps_avg_growth10 + self.revenue_avg_growth10
-    # elsif self.roic_avg5 and self.equity_avg_growth5 and self.free_cash_flow_avg_growth5 and self.eps_avg_growth5 and self.revenue_avg_growth5
-    #   futureGrowthRate = self.roic_avg5 + self.equity_avg_growth5 + self.free_cash_flow_avg_growth5 + self.eps_avg_growth5 + self.revenue_avg_growth5
-    # else
-    #   return nil
-    # end
-    # futureGrowthRate = futureGrowthRate / 5
-    # futureGrowthRate = futureGrowthRate / 100 # convert into decimal instead of percent
-    # futureGrowthRate
-    
-    growthRates = []
-    if self.roic_avg10
-      growthRates << self.roic_avg10
+
+  def epsGrowthRate
+    epsGrowthRate = self.equity_avg_growth10
+    if epsGrowthRate <= -1.0
+      epsGrowthRate = -1.0
     end
-    if self.roic_avg5
-      growthRates << self.roic_avg5
-    end
-    if self.roic_avg2
-      growthRates << self.roic_avg2
-    else
-      return nil
-    end
-    futureGrowthRate = growthRates.min / 100
-    if futureGrowthRate <= -1.0
-      futureGrowthRate = -1.0
-    end
-    futureGrowthRate
+    epsGrowthRate
   end
   
   def discount
