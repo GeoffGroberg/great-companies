@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_02_18_023309) do
+ActiveRecord::Schema.define(version: 2021_02_21_003557) do
 
   create_table "companies", force: :cascade do |t|
     t.text "symbol"
@@ -46,7 +46,16 @@ ActiveRecord::Schema.define(version: 2021_02_18_023309) do
     t.boolean "great", default: false
     t.decimal "graham_number"
     t.decimal "intrinsic_value"
-    t.decimal "pe_ratio"
+    t.decimal "pe_ttm"
+    t.decimal "eps_ttm"
+    t.decimal "eps_growth_rate"
+    t.decimal "default_pe"
+    t.decimal "avg_pe"
+    t.decimal "future_pe"
+    t.decimal "future_eps"
+    t.decimal "future_price"
+    t.decimal "pe"
+    t.decimal "eps"
   end
 
   create_table "key_metrics", force: :cascade do |t|

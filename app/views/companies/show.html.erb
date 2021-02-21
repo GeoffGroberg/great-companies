@@ -17,6 +17,7 @@
 <p>
   <strong>Price:</strong>
   <%= number_with_precision(@company.price, precision: 2) %>
+  (discount: <%= number_with_precision(@company.discount, precision: 1) %>%)
 </p>
 <p>
   <strong>Graham Number:</strong>
@@ -25,10 +26,14 @@
 <p>
   <strong>Intrinsic Value:</strong>
   <%= number_with_precision(@company.intrinsic_value, precision: 2) %>
-</p>
-<p>
-  <strong>PE Ratio:</strong>
-  <%= number_with_precision(@company.pe_ratio, precision: 2) %>
+  <br>EPS growth rate: <%= number_with_precision(@company.eps_growth_rate, precision: 2) %>
+  <br>EPS: <%= number_with_precision(@company.eps, precision: 2) %>
+  <br>future EPS: <%= number_with_precision(@company.future_eps, precision: 2) %>
+  <br>default PE: <%= number_with_precision(@company.default_pe, precision: 2) %>
+  <br>avg PE: <%= number_with_precision(@company.avg_pe, precision: 2) %>
+  <br>future PE: <%= number_with_precision(@company.future_pe, precision: 2) %>
+  <br>future price: <%= number_with_precision(@company.future_price, precision: 2) %>
+  
 </p>
 
 <table class="metrics">

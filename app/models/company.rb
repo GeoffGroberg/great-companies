@@ -6,6 +6,7 @@ class Company < ApplicationRecord
   def pull
     profile_result = self.pullProfile
     financials_result = self.pullKeyMetrics
+    quote_result = self.pullQuote
     self.calculate # calculate growth rates from key metrics
     if profile_result and financials_result
       return true
@@ -16,7 +17,7 @@ class Company < ApplicationRecord
     body = apiCall(request: 'profile')
     c = body.first
     if c.nil?
-      self.errors.add(:base, "Unable to pull company info. No data.")
+      self.errors.add(:base, "Unable to pull company profile. No data.")
       return false
     end
     # convert nil values to ''
@@ -37,6 +38,20 @@ class Company < ApplicationRecord
     self.exchangeShortName = c['exchangeShortName']
     self.country = c['country']
     self.ipoDate = c['ipoDate']
+    self.save
+    return true
+  end
+  
+  def pullQuote
+    body = apiCall(request: 'quote')
+    c = body.first
+    if c.nil?
+      self.errors.add(:base, "Unable to pull company quote. No data.")
+      return false
+    end
+    self.price = c['price'].to_f
+    self.pe = c['pe'].to_f
+    self.eps = c['eps'].to_f
     self.save
     return true
   end
@@ -98,6 +113,7 @@ class Company < ApplicationRecord
         key_metrics[k].save
       end
     end
+
     # yearly averages
     self.roic_avg10 = avg('roic', 10)
     self.roic_avg5 = avg('roic', 5)
@@ -114,170 +130,121 @@ class Company < ApplicationRecord
     self.revenue_avg_growth10 = avg('revenue_growth', 10)
     self.revenue_avg_growth5 = avg('revenue_growth', 5)
     self.revenue_avg_growth2 = avg('revenue_growth', 3)
+
     # debt ratio
     if key_metrics and key_metrics[1]
       self.debt_ratio = key_metrics[1].debt_ratio
     end
+
     # graham number
     if key_metrics and key_metrics[1]
       self.graham_number = key_metrics[1].graham_number
     end
+
+    # pe ttm
+    if key_metrics and key_metrics.first
+      self.pe_ttm = key_metrics.first.pe_ratio
+    end
+
+    # eps ttm
+    if key_metrics and key_metrics.first
+      self.eps_ttm = key_metrics.first.eps
+    end
+
+    # eps growth rate estimate, based on avg equity growth
+    if self.equity_avg_growth10
+      eps_growth_rate = self.equity_avg_growth10
+    elsif self.equity_avg_growth5
+      eps_growth_rate = self.equity_avg_growth5
+    elsif self.equity_avg_growth2
+      eps_growth_rate = self.equity_avg_growth2
+    else
+      eps_growth_rate = nil
+    end
+    self.eps_growth_rate = eps_growth_rate
+    
+    # default PE
+    self.default_pe = self.eps_growth_rate
+
+    # avg historical PE
+    # (averaged for a minimum of 2 years but up to 10 years, + 1 ttm statement)
+    if key_metrics.length > 2
+      avg_pe = 0.0
+      y = 0
+      key_metrics.each do |m|
+        if m['pe_ratio']
+          y += 1
+          avg_pe += m['pe_ratio']
+        end
+        break if y >= 11
+      end
+      avg_pe = avg_pe / y
+    else
+      avg_pe = nil
+    end
+    self.avg_pe = avg_pe
+    
+    # future PE
+    if self.default_pe.nil? and self.avg_pe.nil?
+      future_pe = nil
+    elsif self.default_pe.nil? or self.default_pe < 0
+      future_pe = self.avg_pe * 2
+    elsif self.avg_pe.nil? or self.avg_pe < 0
+      future_pe = self.default_pe * 2
+    else
+      future_pe = [self.default_pe, self.avg_pe].min * 2
+    end
+    self.future_pe = future_pe
+    
+    # future EPS
+    if self.eps.nil? or self.eps_growth_rate.nil?
+      future_eps = nil
+    else
+      future_eps = self.eps
+      r = self.eps_growth_rate / 100 # convert percent to decimal
+      y = 0
+      while y < 10
+        y += 1
+        future_eps = future_eps * (1 + r)
+      end
+    end
+    self.future_eps = future_eps
+    
+    # future price
+    if self.future_eps.nil? or self.future_pe.nil?
+      future_price = nil
+    else
+      future_price = self.future_eps * self.future_pe
+    end
+    self.future_price = future_price
+    
     # intrinsic value
     self.intrinsic_value = self.intrinsicValue
-    # pe ratio
-    if key_metrics and key_metrics.first
-      self.pe_ratio = key_metrics.first.pe_ratio
-    end
     
     self.save
   end
 
-  # def intrinsicValue
-  #   epsGrowthRate = self.epsGrowthRate
-  #   unless epsGrowthRate
-  #     return nil
-  #   end
-  #   # puts "---"
-  #   # puts "epsGrowthRate: #{epsGrowthRate}"
-  #   # calculate future free cash flow
-  #   y = 0
-  #
-  #   key_metrics = self.key_metrics.order("date DESC")
-  #   unless key_metrics.first
-  #     return nil
-  #   end
-  #   # drop ttm metrics - only use annual reports
-  #   if key_metrics.first.ttm
-  #     key_metrics = key_metrics.drop(1)
-  #   end
-  #
-  #   # freeCashFlow = key_metrics[0]['free_cash_flow'].to_f
-  #   # average free cash flow over past 3 years
-  #   if key_metrics.length < 3
-  #     return nil
-  #   end
-  #   freeCashFlow = (key_metrics[0]['free_cash_flow'].to_f + key_metrics[1]['free_cash_flow'].to_f + key_metrics[2]['free_cash_flow'].to_f) / 3
-  #   # puts "---"
-  #   # puts "freeCashFlow: #{freeCashFlow}"
-  #   futureFCF = []
-  #   r = epsGrowthRate
-  #   while y < 10
-  #     y += 1
-  #     freeCashFlow = freeCashFlow * (1+r)
-  #     futureFCF << freeCashFlow
-  #   end
-  #   futureFCF << futureFCF.last * 10
-  #
-  #   # discount the future FCF by 15%
-  #   dFCFs = []
-  #   r = 0.15
-  #   y = 0
-  #   futureFCF.each do |freeCashFlow|
-  #     y += 1
-  #     dFCF = futureFCF[y-1] / ((1 + r)**y)
-  #     dFCFs << dFCF
-  #   end
-  #   dFCFs.pop # drop the last item
-  #   dFCFs << dFCFs.last * 10
-  #   # dFCFs.each do |test|
-  #   #   puts "---"
-  #   #   puts "dFCF: #{test}"
-  #   # end
-  #   intrinsicValue = dFCFs.last
-  #   intrinsicValue
-  # end
-  
   def intrinsicValue
-    
-    # eps Growth Rate
-    epsGrowthRate = self.epsGrowthRate.to_f
-    unless epsGrowthRate
-      return nil
-    end
-    puts "---"
-    puts "epsGrowthRate: #{epsGrowthRate}"
-
-    key_metrics = self.key_metrics.order("date DESC")
-    if key_metrics.length < 4 # require at least 4 key metrics (3 year + 1 ttm)
-      return nil
-    end
-    
-    # current EPS
-    currentEPS = key_metrics[0]['eps'].to_f
-    puts "---"
-    puts "currentEPS: #{currentEPS}"
-    
-    # after getting the current EPS we can drop ttm metrics - only use annual reports
-    if key_metrics.first.ttm
-      key_metrics = key_metrics.drop(1)
-    end
-
-    # default PE
-    defaultPE = epsGrowthRate
-    puts "---"
-    puts "defaultPE: #{defaultPE}"
-    
-    # average historical PE
-    avgPE = 0.0
-    y = 0
-    key_metrics.each do |m|
-      y += 1
-      avgPE += m['pe_ratio']
-      break if y >= 10
-    end
-    avgPE = avgPE / 10
-    puts "---"
-    puts "avgPE: #{avgPE}"
-
-    # future PE
-    futurePE = [defaultPE, avgPE].min * 2
-    puts "---"
-    puts "futurePE: #{futurePE}"
-    
-    # future EPS 10 years from now
-    futureEPS = currentEPS
-    r = epsGrowthRate / 100 # convert percent to decimal
-    y = 0
-    while y < 10
-      y += 1
-      futureEPS = futureEPS * (1 + r)
-    end
-    puts "---"
-    puts "futureEPS: #{futureEPS}"
-
-    # future price
-    futurePrice = futureEPS * futurePE
-    puts "---"
-    puts "futurePrice: #{futurePrice}"
-    
     # discount the future price by 15% for 10 years
-    intrinsicValue = futurePrice
+    unless self.future_price
+      return nil
+    end
+    intrinsicValue = self.future_price
     r = 0.15
     y = 0
     while y < 10
       y += 1
       intrinsicValue = intrinsicValue * (1 - r)
     end
-    puts "---"
-    puts "intrinsicValue: #{intrinsicValue}"
-    
     intrinsicValue
   end
 
-  def epsGrowthRate
-    epsGrowthRate = self.equity_avg_growth10
-    if epsGrowthRate <= -1.0
-      epsGrowthRate = -1.0
-    end
-    epsGrowthRate
-  end
-  
   def discount
     if self.intrinsic_value and self.price
       discount = (1 - (self.price / self.intrinsic_value)) * 100
-      if discount < -900
-        discount = nil
-      end
+      # if discount < -9000
+      #   discount = nil
+      # end
     else
       discount = nil
     end
