@@ -1,0 +1,41 @@
+<%= form_with(model: company) do |form| %>
+  <% if company.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(company.errors.count, "error") %> prohibited this from being saved:</h2>
+
+      <ul>
+        <% company.errors.each do |error| %>
+          <li><%= error.full_message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="field">
+    <!-- <%= form.label "eps" %> -->
+	EPS
+    <%= form.text_field :eps_override, placeholder: number_with_precision(company.eps, precision: 2), value: company.eps_override, size: 7 %>
+  </div>
+
+  <div class="field">
+    <!-- <%= form.label "eps growth rate (based on historical equity growth)" %> -->
+	EPS Growth Rate
+    <%= form.text_field :eps_growth_rate_override, placeholder: number_with_precision(company.eps_growth_rate, precision: 2), value: company.eps_growth_rate_override, size: 7 %>
+	<br>
+	(Based on historical equity growth.<br>This might also look like half of the current PE.)
+  </div>
+
+  <div class="field">
+    <!-- <%= form.label "future pe" %> -->
+	Future PE
+    <%= form.text_field :future_pe_override, placeholder: number_with_precision(company.future_pe, precision: 2), value: company.future_pe_override, size: 7 %>
+	<br>
+	(Lower of [default_pe (same as eps growth rate) | historical avg_pe], multiplied by 2.)
+  </div>
+  
+  <%= form.hidden_field :recalculate, value: :true %>
+
+  <div class="actions">
+    <%= form.submit %>
+  </div>
+<% end %>

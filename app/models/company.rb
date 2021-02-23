@@ -161,6 +161,10 @@ class Company < ApplicationRecord
     else
       eps_growth_rate = nil
     end
+    # allow eps_growth_rate_override
+    if self.eps_growth_rate_override
+      eps_growth_rate = self.eps_growth_rate_override
+    end
     self.eps_growth_rate = eps_growth_rate
     
     # default PE
@@ -194,13 +198,19 @@ class Company < ApplicationRecord
     else
       future_pe = [self.default_pe, self.avg_pe].min * 2
     end
+    # allow future_pe_override
+    if self.future_pe_override
+      future_pe = self.future_pe_override
+    end
     self.future_pe = future_pe
     
     # future EPS
     if self.eps.nil? or self.eps_growth_rate.nil?
       future_eps = nil
     else
-      future_eps = self.eps
+      # allow eps_override
+      future_eps = self.eps_override || self.eps
+
       r = self.eps_growth_rate / 100 # convert percent to decimal
       y = 0
       while y < 10

@@ -6,13 +6,15 @@ class CompaniesController < ApplicationController
     if params['screen']
       case params['screen']
       when "Great Companies"
-        @companies = Company.where("great = true")
+        @companies = Company.where("great = true").order("symbol")
       when "Big 5"
-        @companies = Company.where("roic_avg10 > 10 and equity_avg_growth10 > 10 and free_cash_flow_avg_growth10 > 10 and eps_avg_growth10 > 10 and revenue_avg_growth10 > 10")
+        @companies = Company.where("roic_avg10 > 10 and equity_avg_growth10 > 10 and free_cash_flow_avg_growth10 > 10 and eps_avg_growth10 > 10 and revenue_avg_growth10 > 10").order("symbol")
       when "Big 5 Intrinsic Value Discounted"
-        @companies = Company.where("roic_avg10 > 10 and equity_avg_growth10 > 10 and free_cash_flow_avg_growth10 > 10 and eps_avg_growth10 > 10 and revenue_avg_growth10 > 10 and price <= intrinsic_value")
+        # @companies = Company.where("roic_avg10 > 10 and equity_avg_growth10 > 10 and free_cash_flow_avg_growth10 > 10 and eps_avg_growth10 > 10 and revenue_avg_growth10 > 10 and price <= intrinsic_value").sort_by {|c| c.price / c.intrinsic_value}
+        @companies = Company.where("roic_avg10 > 10 and equity_avg_growth10 > 10 and free_cash_flow_avg_growth10 > 10 and eps_avg_growth10 > 10 and revenue_avg_growth10 > 10 and price <= intrinsic_value").order("symbol")
       when "Intrinsic Value Discounted"
-        @companies = Company.where('price > 0 and price < intrinsic_value').order(Arel.sql('price / intrinsic_value ASC'))
+        # @companies = Company.where('price > 0 and price < intrinsic_value').sort_by {|c| c.price / c.intrinsic_value}
+        @companies = Company.where('price > 0 and price < intrinsic_value').order("symbol")
       # else
       #   @companies = Company.all
       end
@@ -72,16 +74,14 @@ class CompaniesController < ApplicationController
   # PATCH/PUT /companies/1 or /companies/1.json
   def update
     respond_to do |format|
-      # if @company.pull
-      # if @company.save
-      if params['great']
-        @company.great = params['great']
-      end
-      if params['pullFinancials']
+      if params['company']['pullFinancials']
         @company.pull
       end
-      
-      if @company.save
+
+      if @company.update(company_params)
+        if params['company']['recalculate']
+          @company.calculate
+        end
         format.html { redirect_to @company, notice: "Company was successfully updated." }
         format.json { render :show, status: :ok, location: @company }
       else
@@ -108,7 +108,7 @@ class CompaniesController < ApplicationController
 
     # Only allow a list of trusted parameters through.
     def company_params
-      params.require(:company).permit(:symbol)
+      params.require(:company).permit(:symbol, :eps_override, :eps_growth_rate_override, :future_pe_override, :great)
     end
     
 end

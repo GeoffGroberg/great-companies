@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_02_21_003557) do
+ActiveRecord::Schema.define(version: 2021_02_23_004041) do
 
   create_table "companies", force: :cascade do |t|
     t.text "symbol"
@@ -56,6 +56,9 @@ ActiveRecord::Schema.define(version: 2021_02_21_003557) do
     t.decimal "future_price"
     t.decimal "pe"
     t.decimal "eps"
+    t.decimal "eps_override"
+    t.decimal "eps_growth_rate_override"
+    t.decimal "future_pe_override"
   end
 
   create_table "key_metrics", force: :cascade do |t|

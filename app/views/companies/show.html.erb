@@ -29,11 +29,12 @@
   <br>EPS growth rate: <%= number_with_precision(@company.eps_growth_rate, precision: 2) %>
   <br>EPS: <%= number_with_precision(@company.eps, precision: 2) %>
   <br>future EPS: <%= number_with_precision(@company.future_eps, precision: 2) %>
+  <br>current PE: <%= number_with_precision(@company.pe, precision: 2) %>
   <br>default PE: <%= number_with_precision(@company.default_pe, precision: 2) %>
   <br>avg PE: <%= number_with_precision(@company.avg_pe, precision: 2) %>
   <br>future PE: <%= number_with_precision(@company.future_pe, precision: 2) %>
   <br>future price: <%= number_with_precision(@company.future_price, precision: 2) %>
-  
+  <%= render 'valuation_form', company: @company %>
 </p>
 
 <table class="metrics">
@@ -132,9 +133,9 @@
 
 <%= link_to 'Edit', edit_company_path(@company) %> |
 <%= link_to 'Back', companies_path %> |
-<%= link_to "Update Financials", company_path(@company, pullFinancials: :true), method: :put %> |
+<%= link_to "Update Financials", company_path(@company, company: {pullFinancials: :true}), method: :put %> |
 <% if @company.great %>
-<%= link_to "Unmark Great", company_path(@company, great: :false), method: :put %>
+<%= link_to "Unmark Great", company_path(@company, company: {great: :false}), method: :put %>
 <% else %>
-<%= link_to "Mark as Great", company_path(@company, great: :true), method: :put %>
+<%= link_to "Mark as Great", company_path(@company, company: {great: :true}), method: :put %>
 <% end %>
