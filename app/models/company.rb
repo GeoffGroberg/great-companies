@@ -4,6 +4,19 @@ class Company < ApplicationRecord
   has_many :notes
   has_many :transactions
 
+  def gain
+    unless self.transactions
+      return nil
+    end
+    balance = 0.0
+    cost = 0.0
+    self.transactions.each do |t|
+      cost += (t.number_of_shares * t.price)
+      balance += (t.number_of_shares * self.price)
+    end
+    ((balance / cost) - 1) * 100
+  end
+  
   def pull
     profile_result = self.pullProfile
     financials_result = self.pullKeyMetrics

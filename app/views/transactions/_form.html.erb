@@ -12,15 +12,11 @@
   <% end %>
 
   <div class="field">
-    <!-- <%= form.label :company_id %>
-    <%= form.text_field :company_id %> -->
-	<%= collection_select(:transaction, :company_id, Company.all.order("symbol"), :id, :symbol) %>
+	<%= collection_select(:transaction, :account_id, Account.all, :id, :name) %>
   </div>
 
   <div class="field">
-    <!-- <%= form.label :account_id %>
-    <%= form.text_field :account_id %> -->
-	<%= collection_select(:transaction, :account_id, Account.all, :id, :name) %>
+	<%= collection_select(:transaction, :company_id, Company.all.order("symbol"), :id, :symbol) %>
   </div>
 
   <div class="field">
@@ -31,6 +27,10 @@
   <div class="field">
     <%= form.label :price %>
     <%= form.text_field :price %>
+  </div>
+  
+  <div class="field">
+	  <%= form.datetime_select :dt, default: Time.current %>
   </div>
 
   <div class="actions">
