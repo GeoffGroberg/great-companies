@@ -1,4 +1,6 @@
 Rails.application.routes.draw do
+  resources :transactions
+  resources :accounts
   resources :companies do
     resources :notes
   end

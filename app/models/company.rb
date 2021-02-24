@@ -2,6 +2,7 @@ class Company < ApplicationRecord
   validates :symbol, uniqueness: true
   has_many :key_metrics
   has_many :notes
+  has_many :transactions
 
   def pull
     profile_result = self.pullProfile

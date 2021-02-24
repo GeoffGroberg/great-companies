@@ -1,0 +1,39 @@
+<%= form_with(model: transaction) do |form| %>
+  <% if transaction.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(transaction.errors.count, "error") %> prohibited this transaction from being saved:</h2>
+
+      <ul>
+        <% transaction.errors.each do |error| %>
+          <li><%= error.full_message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="field">
+    <!-- <%= form.label :company_id %>
+    <%= form.text_field :company_id %> -->
+	<%= collection_select(:transaction, :company_id, Company.all.order("symbol"), :id, :symbol) %>
+  </div>
+
+  <div class="field">
+    <!-- <%= form.label :account_id %>
+    <%= form.text_field :account_id %> -->
+	<%= collection_select(:transaction, :account_id, Account.all, :id, :name) %>
+  </div>
+
+  <div class="field">
+    <%= form.label :number_of_shares %>
+    <%= form.number_field :number_of_shares %>
+  </div>
+
+  <div class="field">
+    <%= form.label :price %>
+    <%= form.text_field :price %>
+  </div>
+
+  <div class="actions">
+    <%= form.submit %>
+  </div>
+<% end %>
