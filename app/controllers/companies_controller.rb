@@ -1,5 +1,5 @@
 class CompaniesController < ApplicationController
-  before_action :set_company, only: %i[ show edit update destroy updateFinancials]
+  before_action :set_company, only: %i[ show edit update destroy]
 
   # GET /companies or /companies.json
   def index
@@ -64,9 +64,13 @@ class CompaniesController < ApplicationController
   end
 
   def updateAllCompanies
-    UpdateAllCompaniesJob.perform_later
+    UpdateAllCompaniesJob.perform_later(params['company_ids'])
     respond_to do |format|
-      format.html { redirect_to companies_url, notice: "Updating companies..." }
+      num_companies = "all"
+      if params['company_ids']
+        num_companies = params['company_ids'].length
+      end
+      format.html { redirect_back fallback_location: root_path, notice: "Pulling financials for #{num_companies} companies." }
       format.json { head :no_content }
     end
   end

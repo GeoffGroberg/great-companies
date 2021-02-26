@@ -3,7 +3,7 @@ class AddUsCompaniesJob < ApplicationJob
 
   def perform(*args)
     # get a list of companies/stocks that are traded on the NYSE and Nasdaq
-    url = "https://fmpcloud.io/api/v3/stock/list?apikey=#{$apiKey}"
+    url = "https://fmpcloud.io/api/v3/stock/list?apikey=#{Rails.application.credentials.fmpcloudApiKey}"
     uri = URI(url)
     response = Net::HTTP.get_response(uri)
     unless response.code == '200'

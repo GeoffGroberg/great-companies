@@ -22,6 +22,13 @@ gem 'jbuilder', '~> 2.7'
 # Use Active Model has_secure_password
 # gem 'bcrypt', '~> 3.1.7'
 
+# background jobs
+gem 'sucker_punch', '~> 2.0'
+# gem 'sidekiq'
+
+# for api requests
+gem 'httparty'
+
 # Use Active Storage variant
 # gem 'image_processing', '~> 1.2'
 

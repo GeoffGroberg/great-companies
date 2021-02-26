@@ -82,6 +82,9 @@ GEM
     ffi (1.14.2)
     globalid (0.4.2)
       activesupport (>= 4.2.0)
+    httparty (0.18.1)
+      mime-types (~> 3.0)
+      multi_xml (>= 0.5.2)
     i18n (1.8.7)
       concurrent-ruby (~> 1.0)
     jbuilder (2.11.2)
@@ -97,10 +100,14 @@ GEM
     marcel (0.3.3)
       mimemagic (~> 0.3.2)
     method_source (1.0.0)
+    mime-types (3.3.1)
+      mime-types-data (~> 3.2015)
+    mime-types-data (3.2021.0225)
     mimemagic (0.3.5)
     mini_mime (1.0.2)
     minitest (5.14.3)
     msgpack (1.4.1)
+    multi_xml (0.6.0)
     nio4r (2.5.4)
     nokogiri (1.11.1-x86_64-darwin)
       racc (~> 1.4)
@@ -170,6 +177,8 @@ GEM
       activesupport (>= 4.0)
       sprockets (>= 3.0.0)
     sqlite3 (1.4.2)
+    sucker_punch (2.1.2)
+      concurrent-ruby (~> 1.0)
     thor (1.1.0)
     tilt (2.0.10)
     turbolinks (5.2.1)
@@ -205,6 +214,7 @@ DEPENDENCIES
   bootsnap (>= 1.4.4)
   byebug
   capybara (>= 3.26)
+  httparty
   jbuilder (~> 2.7)
   listen (~> 3.3)
   puma (~> 5.0)
@@ -214,6 +224,7 @@ DEPENDENCIES
   selenium-webdriver
   spring
   sqlite3 (~> 1.4)
+  sucker_punch (~> 2.0)
   turbolinks (~> 5)
   tzinfo-data
   web-console (>= 4.1.0)

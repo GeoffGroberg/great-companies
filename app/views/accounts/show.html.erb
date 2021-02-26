@@ -11,5 +11,9 @@
   <% end %>
 </p>
 
+<%= link_to 'pull financials for these companies', updateAllCompanies_url(company_ids: @account.active_companies) %>
+
+<br>
+<br>
 <%= link_to 'Edit', edit_account_path(@account) %> |
 <%= link_to 'Back', accounts_path %>
