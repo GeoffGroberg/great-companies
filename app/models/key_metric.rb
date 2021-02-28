@@ -1,4 +1,4 @@
 class KeyMetric < ApplicationRecord
   belongs_to :company
-  validates :company, uniqueness: {scope: :date}
+  validates :company, uniqueness: {scope: [:date, :quarterly]}
 end

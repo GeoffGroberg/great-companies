@@ -1,6 +1,9 @@
 <p id="notice"><%= notice %></p>
+<p id="alert"><%= alert %></p>
 
-<h2><%= @company.symbol %> - <%= @company.name %> (<%= @company.exchangeShortName %>)</h2>
+<h2><%= @company.symbol %> - <%= @company.name %> (<%= @company.exchangeShortName %>) <% if @company.website %><%= link_to "Website", @company.website %><% end %></h2>
+
+
 
 <p>
   <strong>Description:</strong>
@@ -51,12 +54,12 @@
 	</thead>
 	<tbody>
 		<tr>
-			<td>2 yr</td>
-			<td><%= number_to_percentage(@company.revenue_avg_growth2, precision: 1) %></td>
-			<td><%= number_to_percentage(@company.eps_avg_growth2, precision: 1) %></td>
-			<td><%= number_to_percentage(@company.free_cash_flow_avg_growth2, precision: 1) %></td>
-			<td><%= number_to_percentage(@company.equity_avg_growth2, precision: 1) %></td>
-			<td><%= number_to_percentage(@company.roic_avg2, precision: 1) %></td>
+			<td>3 yr</td>
+			<td><%= number_to_percentage(@company.revenue_avg_growth3, precision: 1) %></td>
+			<td><%= number_to_percentage(@company.eps_avg_growth3, precision: 1) %></td>
+			<td><%= number_to_percentage(@company.free_cash_flow_avg_growth3, precision: 1) %></td>
+			<td><%= number_to_percentage(@company.equity_avg_growth3, precision: 1) %></td>
+			<td><%= number_to_percentage(@company.roic_avg3, precision: 1) %></td>
 		</tr>
 		<tr>
 			<td>5 yr</td>
@@ -96,10 +99,10 @@
 		</tr>
 	</thead>
 	<tbody>
-	<% @company.key_metrics.order("date DESC").each_with_index do |v, k| %>
-		<% unless k > 10 %>
-		<tr class="<%= v.ttm ? 'ttm' : '' %>">
-			<td><%= v.ttm ? "TTM " + v.date.to_s : v.date %></td>
+	<% @company.key_metrics.order("quarterly DESC, date DESC").each_with_index do |v, k| %>
+		<% unless k > 14 %>
+		<tr class="<%= v.quarterly ? 'quarterly' : '' %>">
+			<td><%= v.quarterly ? "Q " + v.date.to_s : v.date %></td>
 			<td><%= number_with_precision(v.revenue, precision: 1) %></td>
 			<td><%= number_with_precision(v.eps, precision: 1) %></td>
 			<td><%= number_with_precision(v.free_cash_flow, precision: 1) %></td>

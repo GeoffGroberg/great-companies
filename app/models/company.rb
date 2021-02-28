@@ -17,19 +17,22 @@ class Company < ApplicationRecord
     ((balance / cost) - 1) * 100
   end
   
-  def pull
+  def pull(force: true) # TODO: change to false after we've pulled all companies
     quote_result = self.pullQuote
-    financials_result = self.pullKeyMetrics
-    self.calculate # calculate growth rates from key metrics
+    financials_result = self.pullKeyMetrics(force: force)
+    calculate_result = self.calculate # calculate growth rates from key metrics
     if quote_result and financials_result
       return true
+    else
+      puts "*** Unable to pull."
+      return false
     end
   end
   
   def calculate
     # run calculations on key metrics
     # yearly growth
-    key_metrics = self.key_metrics.order("date DESC")
+    key_metrics = self.key_metrics.where(quarterly: false).order("date DESC")
     key_metrics.each_with_index do |v, k|
       if key_metrics.size > k + 1
         prev = key_metrics[k + 1]
@@ -44,19 +47,19 @@ class Company < ApplicationRecord
     # yearly averages
     self.roic_avg10 = avg('roic', 10)
     self.roic_avg5 = avg('roic', 5)
-    self.roic_avg2 = avg('roic', 3)
+    self.roic_avg3 = avg('roic', 3)
     self.equity_avg_growth10 = avg('equity_growth', 10)
     self.equity_avg_growth5 = avg('equity_growth', 5)
-    self.equity_avg_growth2 = avg('equity_growth', 3)
+    self.equity_avg_growth3 = avg('equity_growth', 3)
     self.free_cash_flow_avg_growth10 = avg('free_cash_flow_growth', 10)
     self.free_cash_flow_avg_growth5 = avg('free_cash_flow_growth', 5)
-    self.free_cash_flow_avg_growth2 = avg('free_cash_flow_growth', 3)
+    self.free_cash_flow_avg_growth3 = avg('free_cash_flow_growth', 3)
     self.eps_avg_growth10 = avg('eps_growth', 10)
     self.eps_avg_growth5 = avg('eps_growth', 5)
-    self.eps_avg_growth2 = avg('eps_growth', 3)
+    self.eps_avg_growth3 = avg('eps_growth', 3)
     self.revenue_avg_growth10 = avg('revenue_growth', 10)
     self.revenue_avg_growth5 = avg('revenue_growth', 5)
-    self.revenue_avg_growth2 = avg('revenue_growth', 3)
+    self.revenue_avg_growth3 = avg('revenue_growth', 3)
 
     # debt ratio
     if key_metrics and key_metrics[1]
@@ -68,23 +71,13 @@ class Company < ApplicationRecord
       self.graham_number = key_metrics[1].graham_number
     end
 
-    # pe ttm
-    if key_metrics and key_metrics.first
-      self.pe_ttm = key_metrics.first.pe_ratio
-    end
-
-    # eps ttm
-    if key_metrics and key_metrics.first
-      self.eps_ttm = key_metrics.first.eps
-    end
-
     # eps growth rate estimate, based on avg equity growth
     if self.equity_avg_growth10
       eps_growth_rate = self.equity_avg_growth10
     elsif self.equity_avg_growth5
       eps_growth_rate = self.equity_avg_growth5
-    elsif self.equity_avg_growth2
-      eps_growth_rate = self.equity_avg_growth2
+    elsif self.equity_avg_growth3
+      eps_growth_rate = self.equity_avg_growth3
     else
       eps_growth_rate = nil
     end
@@ -98,8 +91,8 @@ class Company < ApplicationRecord
     self.default_pe = self.eps_growth_rate
 
     # avg historical PE
-    # (averaged for a minimum of 2 years but up to 10 years, + 1 ttm statement)
-    if key_metrics.length > 2
+    # (averaged for a minimum of 2 years but up to 10 years)
+    if key_metrics.length >= 2
       avg_pe = 0.0
       y = 0
       key_metrics.each do |m|
@@ -107,7 +100,7 @@ class Company < ApplicationRecord
           y += 1
           avg_pe += m['pe_ratio']
         end
-        break if y >= 11
+        break if y >= 10
       end
       avg_pe = avg_pe / y
     else
@@ -158,7 +151,7 @@ class Company < ApplicationRecord
     # intrinsic value
     self.intrinsic_value = self.intrinsicValue
     
-    self.save
+    return self.save
   end
 
   def intrinsicValue
@@ -190,6 +183,10 @@ class Company < ApplicationRecord
   
   def pullProfile
     body = apiCall(request: 'profile')
+    unless body
+      self.errors.add(:base, "Unable to pull company profile. No body.")
+      return false
+    end
     c = body.first
     if c.nil?
       self.errors.add(:base, "Unable to pull company profile. No data.")
@@ -212,12 +209,19 @@ class Company < ApplicationRecord
     self.exchangeShortName = c['exchangeShortName']
     self.country = c['country']
     self.ipoDate = c['ipoDate']
+    self.is_actively_trading = c['isActivelyTrading']
+    self.is_etf = c['isEtf']
+    self.website = c['website']
     self.save
     return true
   end
   
   def pullQuote
     body = apiCall(request: 'quote')
+    unless body
+      self.errors.add(:base, "Unable to pull company quote. No body.")
+      return false
+    end
     c = body.first
     if c.nil?
       self.errors.add(:base, "Unable to pull company quote. No data.")
@@ -233,7 +237,7 @@ class Company < ApplicationRecord
     return true
   end
   
-  def pullKeyMetrics(limit: 20)
+  def pullKeyMetrics(limit: 20, force: false)
     # is it time to pull anew?
     pull = true
     # if we already pulled after the earnings_announcment time, then no need to pull again
@@ -244,6 +248,9 @@ class Company < ApplicationRecord
     if self.earnings_announcement.present? and DateTime.now < self.earnings_announcement and self.financials_pulled_at.present? and self.financials_pulled_at >= self.earnings_announcement.prev_month(3)
       pull = false
     end
+    if force
+      pull = true
+    end
     unless pull
       return true # no need to pull financials right now
     end
@@ -251,18 +258,23 @@ class Company < ApplicationRecord
     # update the company profile
     profile_result = self.pullProfile
     unless profile_result
+      puts "*** Unable to pull profile."
       return false
     end
     
     # get annual key metrics
     key_metrics = apiCall(request: 'key-metrics', limit: limit)
+    unless key_metrics and key_metrics.first
+      puts "*** Unable to pull annual key metrics."
+      return false
+    end
     # create a new KeyMetric for each year
     x = 0
     while x < limit
       x += 1
       if key_metrics[x-1] and key_metrics[x-1]['date']
         statement_date = key_metrics[x-1]['date']
-        key_metric = KeyMetric.find_or_create_by(date: statement_date, company_id: self.id)
+        key_metric = KeyMetric.find_or_create_by(date: statement_date, company_id: self.id, quarterly: false)
         key_metric.roic = key_metrics[x-1]['roic'].to_f * 100
         key_metric.equity = key_metrics[x-1]['shareholdersEquityPerShare'].to_f
         key_metric.eps = key_metrics[x-1]['netIncomePerShare'].to_f
@@ -275,23 +287,26 @@ class Company < ApplicationRecord
         key_metric.save
       end
     end
-    # update the ttm keyMetric
-    # IMPORTANT: there should only ever be 1 key metric where ttm = true for a given company
-    key_metrics_ttm = apiCall(request: 'key-metrics-ttm', limit: limit)
-    if key_metrics_ttm and key_metrics_ttm.first
-      key_metrics_ttm = key_metrics_ttm.first
-      key_metric_ttm = KeyMetric.find_or_create_by(company_id: self.id, ttm: true)
-      key_metric_ttm.date = Date.today.to_s
-      key_metric_ttm.roic = key_metrics_ttm['roicTTM'].to_f * 100
-      key_metric_ttm.equity = key_metrics_ttm['shareholdersEquityPerShareTTM'].to_f
-      key_metric_ttm.eps = key_metrics_ttm['netIncomePerShareTTM'].to_f
-      key_metric_ttm.revenue = key_metrics_ttm['revenuePerShareTTM'].to_f
-      key_metric_ttm.free_cash_flow = key_metrics_ttm['freeCashFlowPerShareTTM'].to_f
-      longTermDebt = key_metrics_ttm['interestDebtPerShareTTM'].to_f
-      key_metric_ttm.debt_ratio = longTermDebt / key_metric_ttm.free_cash_flow
-      key_metric_ttm.graham_number = key_metrics_ttm['grahamNumberTTM'].to_f
-      key_metric_ttm.pe_ratio = key_metrics_ttm['peRatioTTM'].to_f
-      key_metric_ttm.save
+    # update the quarterly key metrics
+    key_metrics_q = apiCall(request: 'key-metrics', period: 'quarter', limit: 4)
+    unless key_metrics_q and key_metrics_q.length >= 4
+      puts "*** Unable to pull quarterly key metrics."
+      return false
+    end
+    # delete the existing quarterlies
+    KeyMetric.where(company_id: self.id, quarterly: true).destroy_all
+    key_metrics_q.each do |key_metric_q|
+      key_metric = KeyMetric.find_or_create_by(company_id: self.id, quarterly: true, date: key_metric_q['date'])
+      key_metric.roic = key_metric_q['roic'].to_f * 100
+      key_metric.equity = key_metric_q['shareholdersEquityPerShare'].to_f
+      key_metric.eps = key_metric_q['netIncomePerShare'].to_f
+      key_metric.revenue = key_metric_q['revenuePerShare'].to_f
+      key_metric.free_cash_flow = key_metric_q['freeCashFlowPerShare'].to_f
+      longTermDebt = key_metric_q['interestDebtPerShare'].to_f
+      key_metric.debt_ratio = longTermDebt / key_metric.free_cash_flow / 4
+      key_metric.graham_number = key_metric_q['grahamNumber'].to_f
+      key_metric.pe_ratio = key_metric_q['peRatio'].to_f
+      key_metric.save
     end
     self.financials_pulled_at = DateTime.now
     return true
@@ -302,13 +317,9 @@ class Company < ApplicationRecord
   
   def avg(varName, periods)
     # calculate yearly averages
-    key_metrics = self.key_metrics.order("date DESC")
+    key_metrics = self.key_metrics.where(quarterly: false).order("date DESC")
     unless key_metrics.first
       return nil
-    end
-    # drop ttm metrics for periods > 3
-    if periods > 3 and key_metrics.first.ttm
-      key_metrics = key_metrics.drop(1)
     end
     # make sure there is enough data to calculate over n periods
     if key_metrics.size < periods
@@ -326,9 +337,9 @@ class Company < ApplicationRecord
     if periods >= 10 # for periods >= 10, drop hi and low
       metrics.delete(metrics.max)
       metrics.delete(metrics.min)
-    elsif periods >= 5 # for periods >= 5, drop hi
-    # else # drop hi
-      metrics.delete(metrics.max)
+    # elsif periods >= 5 # for periods >= 5, drop hi
+    # # else # drop hi
+    #   metrics.delete(metrics.max)
     end
     if metrics.length == 0
       return nil
@@ -339,10 +350,17 @@ class Company < ApplicationRecord
   
   def apiCall(request:, period: 'year', limit: 20)
     url = "https://fmpcloud.io/api/v3/#{request}/#{self.symbol}?apikey=#{Rails.application.credentials.fmpcloudApiKey}&limit=#{limit}&period=#{period}"
-    response = HTTParty.get(url)
+    begin
+      puts "*** Starting API CALL: #{url}"
+      response = HTTParty.get(url, { timeout: 5 })
+      puts "*** Finished"
+    rescue
+      puts "*** ERROR: failed api call: #{url}"
+      return false
+    end
     # puts response.body, response.code, response.message, response.headers.inspect
     unless response.code == 200
-      self.errors.add(:base, "Unsuccessful API call. Response code: #{response.code}")
+      self.errors.add(:base, "*** Unsuccessful API call. Response code: #{response.code}")
       return false
     end
     body = JSON.parse(response.body)

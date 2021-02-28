@@ -11,12 +11,8 @@
     </div>
   <% end %>
 
-  <div class="field">
-    <%= form.label :symbol %>
-    <%= form.search_field :symbol %>
-  </div>
+	<!-- <%= form.label :symbol %> -->
+	Symbol: <%= form.search_field :symbol, size: 4 %>
+	<%= form.submit "Go" %>
 
-  <div class="actions">
-    <%= form.submit %>
-  </div>
 <% end %>

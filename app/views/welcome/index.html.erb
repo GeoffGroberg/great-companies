@@ -3,6 +3,8 @@
 
 <h1>Home</h1>
 
+<%= render 'companies/form', company: Company.new %>
+
 <h2>Screeners</h2>
 
 <%= link_to "Big 5", companies_path(screen: "Big 5") %>

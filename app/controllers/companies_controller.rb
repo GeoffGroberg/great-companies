@@ -42,12 +42,17 @@ class CompaniesController < ApplicationController
 
   # POST /companies or /companies.json
   def create
-    @company = Company.new(company_params)
+    @company = Company.find_or_create_by(symbol: company_params['symbol'].upcase)
 
     respond_to do |format|
-      if @company.pull and @company.save
-        format.html { redirect_to @company, notice: "Company was successfully created." }
-        format.json { render :show, status: :created, location: @company }
+      if @company
+        if @company.pull
+          format.html { redirect_to @company, notice: "Company was updated." }
+          format.json { render :show, status: "Company was updated.", location: @company }
+        else
+          format.html { redirect_to @company, alert: "Unable to pull info." }
+          format.json { render :show, alert: "Unable to pull info.", location: @company }
+        end
       else
         format.html { render :new, status: :unprocessable_entity }
         format.json { render json: @company.errors, status: :unprocessable_entity }
@@ -79,17 +84,17 @@ class CompaniesController < ApplicationController
   def update
     respond_to do |format|
       if params['company']['pullFinancials']
-        @company.pull
+        result = @company.pull
+      elsif params['company']['recalculate']
+        result = @company.calculate
+      else
+        result = @company.update(company_params)
       end
-
-      if @company.update(company_params)
-        if params['company']['recalculate']
-          @company.calculate
-        end
+      if result
         format.html { redirect_to @company, notice: "Company was successfully updated." }
         format.json { render :show, status: :ok, location: @company }
       else
-        format.html { render :edit, status: :unprocessable_entity }
+        format.html { redirect_to @company, alert: "Company was unable to be updated." }
         format.json { render json: @company.errors, status: :unprocessable_entity }
       end
     end
