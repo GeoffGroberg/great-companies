@@ -84,9 +84,9 @@ class CompaniesController < ApplicationController
   def update
     respond_to do |format|
       if params['company']['pullFinancials']
-        result = @company.pull
+        result = @company.update(company_params) and @company.pull
       elsif params['company']['recalculate']
-        result = @company.calculate
+        result = @company.update(company_params) and @company.calculate
       else
         result = @company.update(company_params)
       end

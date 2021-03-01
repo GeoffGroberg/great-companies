@@ -5,9 +5,9 @@
   <%= @account.name %>
   
   <% @account.active_companies.each do |c| %>
-	<br>
-	<%= link_to c.symbol, company_path(c) %>:
-	<%= number_with_precision(c.gain, precision: 1) %>%
+		<br>
+		<%= link_to c.symbol, company_path(c) %>:
+		<%= number_with_precision(c.gain, precision: 1) %>%
   <% end %>
 </p>
 
