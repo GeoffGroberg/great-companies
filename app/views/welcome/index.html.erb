@@ -20,10 +20,21 @@
 
 
 <h2>Utilities</h2>
+
 <%= link_to 'Accounts', accounts_path %>:
+<ul class="accounts">
 <% Account.all.each do |a| %>
-<%= link_to a.name, account_path(a) %>
+<li><%= link_to a.name, account_path(a) %></li>
 <% end %>
+</ul>
+
+<%= link_to 'Lists', lists_path %>:
+<ul class="lists">
+<% List.all.each do |l| %>
+<li><%= link_to l.name, list_path(l) %></li>
+<% end %>
+</ul>
+
 <br>
 <%= link_to 'Pull Financials for All Companies', updateAllCompanies_url, data: { confirm: 'Are you sure?' } %>
 <br>

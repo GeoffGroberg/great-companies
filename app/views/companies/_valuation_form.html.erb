@@ -1,3 +1,12 @@
+EPS growth rate: <%= number_with_precision(company.eps_growth_rate, precision: 2) %>
+<br>EPS: <%= number_with_precision(company.eps, precision: 2) %>
+<br>future EPS: <%= number_with_precision(company.future_eps, precision: 2) %>
+<br>current PE: <%= number_with_precision(company.pe, precision: 2) %>
+<br>default PE: <%= number_with_precision(company.default_pe, precision: 2) %>
+<br>avg PE: <%= number_with_precision(company.avg_pe, precision: 2) %>
+<br>future PE: <%= number_with_precision(company.future_pe, precision: 2) %>
+<br>future price: <%= number_with_precision(company.future_price, precision: 2) %>
+
 <%= form_with(model: company) do |form| %>
   <% if company.errors.any? %>
     <div id="error_explanation">

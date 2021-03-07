@@ -25,9 +25,9 @@ gem 'jbuilder', '~> 2.7'
 # background jobs
 gem 'sucker_punch', '~> 2.0'
 # gem 'sidekiq'
-
 # for api requests
 gem 'httparty'
+gem 'acts_as_list'
 
 # Use Active Storage variant
 # gem 'image_processing', '~> 1.2'

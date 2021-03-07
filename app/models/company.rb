@@ -3,7 +3,10 @@ class Company < ApplicationRecord
   has_many :key_metrics
   has_many :notes
   has_many :transactions
-
+  has_many :company_lists, -> { order 'position' }
+  has_many :lists, through: :company_lists
+  # acts_as_list :scope => :list
+  
   def gain
     unless self.transactions
       return nil

@@ -3,5 +3,44 @@
 // You can use Sass (SCSS) here: https://sass-lang.com/
 
 div.notes {
-	margin: 2rem 0;
+/*	margin: 2rem 0;*/
+}
+#note_body {
+	width: 100%;
+}
+
+.note {
+	background: #fff;
+	padding: .3rem .7rem .5rem .7rem;
+	margin: .2rem 0;
+	border-radius: .5rem;
+}
+.note .note_header {
+	color: #aaa;
+	margin: 0 0 .2rem 0;
+}
+.note .note_header .date {
+	font-style: italic;
+}
+.note .note_header a {
+	color: #aaa;
+	text-decoration: none;
+}
+.note .note_header a:hover {
+	background: inherit;
+	color: #444;
+}
+.note .note_header .delete {
+	font-weight: bold;
+	float: right;
+}
+.note .note_body {
+	margin: 0;
+}
+.note p {
+	margin: 0;
+}
+
+form.new_note {
+	margin: 1rem 0 0 0;
 }

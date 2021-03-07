@@ -1,6 +1,49 @@
 <p id="notice"><%= notice %></p>
 <p id="alert"><%= alert %></p>
 
+<div id='companySidebar'>
+
+	<%= link_to "Update Financials", company_path(@company, company: {pullFinancials: :true}), method: :put %>
+	<br>
+	<% if @company.great %>
+	<%= link_to "Unmark Great", company_path(@company, company: {great: :false}), method: :put %>
+	<% else %>
+	<%= link_to "Mark as Great", company_path(@company, company: {great: :true}), method: :put %>
+	<% end %>
+	
+	<h4>Add To List</h4>
+	<% lists = List.all %>
+	<% lists.each do |l| %>
+		<% unless l.companies.exists?(@company.id) %>
+			<%= link_to l.name, addCompanyToList_path(l.id, company_id: @company.id), method: :put %>
+			<br>
+		<% end %>
+	<% end %>
+
+	<h4>Remove From List</h4>
+	<% lists.each do |l| %>
+		<% if l.companies.exists?(@company.id) %>
+			<%= link_to l.name, removeCompanyFromList_path(l.id, company_id: @company.id), method: :put %>
+			<br>
+		<% end %>
+	<% end %>
+
+	<p>
+	  <h4>Intrinsic Value:
+	  <%= number_with_precision(@company.intrinsic_value, precision: 2) %></h4>
+	  <%= render 'valuation_form', company: @company %>
+	</p>
+
+	<div class='notes'>
+	<h4>Notes</h4>
+	<%= render @company.notes %>
+	<%= render 'notes/new', company: @company %>
+	</div>
+	
+</div>
+
+
+
 <h2><%= @company.symbol %> - <%= @company.name %> (<%= @company.exchangeShortName %>) <% if @company.website %><%= link_to "Website", @company.website %><% end %></h2>
 
 
@@ -22,23 +65,10 @@
   <%= number_with_precision(@company.price, precision: 2) %>
   (discount: <%= number_with_precision(@company.discount, precision: 1) %>%)
 </p>
-<p>
+<!-- <p>
   <strong>Graham Number:</strong>
   <%= number_with_precision(@company.graham_number, precision: 2) %>
-</p>
-<p>
-  <strong>Intrinsic Value:</strong>
-  <%= number_with_precision(@company.intrinsic_value, precision: 2) %>
-  <br>EPS growth rate: <%= number_with_precision(@company.eps_growth_rate, precision: 2) %>
-  <br>EPS: <%= number_with_precision(@company.eps, precision: 2) %>
-  <br>future EPS: <%= number_with_precision(@company.future_eps, precision: 2) %>
-  <br>current PE: <%= number_with_precision(@company.pe, precision: 2) %>
-  <br>default PE: <%= number_with_precision(@company.default_pe, precision: 2) %>
-  <br>avg PE: <%= number_with_precision(@company.avg_pe, precision: 2) %>
-  <br>future PE: <%= number_with_precision(@company.future_pe, precision: 2) %>
-  <br>future price: <%= number_with_precision(@company.future_price, precision: 2) %>
-  <%= render 'valuation_form', company: @company %>
-</p>
+</p> -->
 
 <table class="metrics">
 	<caption>Averages (per share)</caption>
@@ -127,18 +157,5 @@
 	</tbody>
 </table>
 
-<div class='notes'>
-<h3>Notes:</h3>
-
-<%= render @company.notes %>
-<%= render 'notes/new', company: @company %>
-</div>
-
 <%= link_to 'Edit', edit_company_path(@company) %> |
 <%= link_to 'Back', companies_path %> |
-<%= link_to "Update Financials", company_path(@company, company: {pullFinancials: :true}), method: :put %> |
-<% if @company.great %>
-<%= link_to "Unmark Great", company_path(@company, company: {great: :false}), method: :put %>
-<% else %>
-<%= link_to "Mark as Great", company_path(@company, company: {great: :true}), method: :put %>
-<% end %>

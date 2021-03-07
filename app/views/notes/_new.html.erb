@@ -1,5 +1,5 @@
 <%= form_for ([ @company, Note.new ]) do |form| %>
-	<%= form.text_area :body, size: '40x3' %>
+	<%= form.text_area :body %>
 	<br>
 	<%= form.submit %>
 <% end %>

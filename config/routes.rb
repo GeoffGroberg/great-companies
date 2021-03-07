@@ -1,4 +1,8 @@
 Rails.application.routes.draw do
+  resources :lists
+  put '/list/:id/addCompany/:company_id', to: 'lists#addCompany', as: 'addCompanyToList'
+  put '/list/:id/removeCompany/:company_id', to: 'lists#removeCompany', as: 'removeCompanyFromList'
+  patch '/list/:id/moveCompany/:company_id', to: 'lists#moveCompany', as: 'moveCompanyOnList'
   resources :transactions
   resources :accounts
   resources :companies do

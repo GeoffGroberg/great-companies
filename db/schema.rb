@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_02_27_182754) do
+ActiveRecord::Schema.define(version: 2021_03_06_175120) do
 
   create_table "accounts", force: :cascade do |t|
     t.string "name"
@@ -70,6 +70,16 @@ ActiveRecord::Schema.define(version: 2021_02_27_182754) do
     t.string "website"
   end
 
+  create_table "company_lists", force: :cascade do |t|
+    t.integer "company_id", null: false
+    t.integer "list_id", null: false
+    t.integer "position"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["company_id"], name: "index_company_lists_on_company_id"
+    t.index ["list_id"], name: "index_company_lists_on_list_id"
+  end
+
   create_table "key_metrics", force: :cascade do |t|
     t.integer "company_id", null: false
     t.date "date"
@@ -92,6 +102,12 @@ ActiveRecord::Schema.define(version: 2021_02_27_182754) do
     t.index ["company_id"], name: "index_key_metrics_on_company_id"
   end
 
+  create_table "lists", force: :cascade do |t|
+    t.string "name"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+  end
+
   create_table "notes", force: :cascade do |t|
     t.text "body"
     t.integer "company_id", null: false
@@ -112,6 +128,8 @@ ActiveRecord::Schema.define(version: 2021_02_27_182754) do
     t.index ["company_id"], name: "index_transactions_on_company_id"
   end
 
+  add_foreign_key "company_lists", "companies"
+  add_foreign_key "company_lists", "lists"
   add_foreign_key "key_metrics", "companies"
   add_foreign_key "notes", "companies"
   add_foreign_key "transactions", "accounts"

@@ -29,69 +29,114 @@ $t-9: scale_color($red, $saturation: -10%, $lightness: 10%);
 $t-10: $red;
 
 
-td.t10 {
+.t10 {
 	background: $t10;
 }
-td.t9 {
+.t9 {
 	background: $t9;
 }
-td.t8 {
+.t8 {
 	background: $t8;
 }
-td.t7 {
+.t7 {
 	background: $t7;
 }
-td.t6 {
+.t6 {
 	background: $t6;
 }
-td.t5 {
+.t5 {
 	background: $t5;
 }
-td.t4 {
+.t4 {
 	background: $t4;
 }
-td.t3 {
+.t3 {
 	background: $t3;
 }
-td.t2 {
+.t2 {
 	background: $t2;
 }
-td.t1 {
+.t1 {
 	background: $t1;
 }
-td.t0 {
+.t0 {
 	background: $t0;
 }
-td.t-1 {
+.t-1 {
 	background: $t-1;
 }
-td.t-2 {
+.t-2 {
 	background: $t-2;
 }
-td.t-3 {
+.t-3 {
 	background: $t-3;
 }
-td.t-4 {
+.t-4 {
 	background: $t-4;
 }
-td.t-5 {
+.t-5 {
 	background: $t-5;
 }
-td.t-6 {
+.t-6 {
 	background: $t-6;
 }
-td.t-7 {
+.t-7 {
 	background: $t-7;
 }
-td.t-8 {
+.t-8 {
 	background: $t-8;
 }
-td.t-9 {
+.t-9 {
 	background: $t-9;
 }
-td.t-10 {
+.t-10 {
 	background: $t-10;
 }
+
+
+.big5 {
+	display: flex;
+}
+.big5.header span {
+	color: #aaa;
+	height: 1.5rem;
+}
+.big5 span {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	width: 3.5rem;
+	height: 3.5rem;
+	margin: 1px;
+}
+.big5 .symbol a {
+	font-size: 1rem;
+	color: #777;
+}
+.big5 .great_company a {
+	font-size: 2rem;
+	color: #ddd;
+}
+.big5 .great_company {
+	background: #f5f5f5;
+}
+.big5 .great_company.true {
+	background: $green;
+}
+.big5 .great_company.true a {
+	color: #fff;
+}
+.big5 span a {
+	text-decoration: none;
+	font-weight: bold;
+	color: #fff;
+}
+.big5 span a:hover {
+	background: inherit;
+	color: #000;
+/*	text-decoration: underline;*/
+}
+
 
 
 /* financial tables */
@@ -126,44 +171,18 @@ table.metrics td.key {
 	font-weight: bold;
 }
 
-table.summary td {
-/*	background: #eee;*/
-	text-align: center;
-	margin: 0;
-	padding: 0 .5rem;
-	font-size: .9rem;
-}
-table td.yes {
-	background: $green;
-}
-table td.no {
-	background: $red;
-}
-table.summary td.symbol {
-	background: initial;
-	margin: 0;
-	padding: 0;
-}
-table.summary a {
-	text-decoration: none;
-	display: block;
-	padding: 1rem .1rem;
-	font-size: 1.3rem;
-}
-table.summary td.great_company {
-	margin: 0;
-	padding: 0;
-}
-table.summary td.great_company a {
-	font-size: 2rem;
-	font-weight: bold;
-	color: #fff;
+
+
+/* sidebar */
+#companySidebar {
+	float: right;
+	padding: 1rem;
+	margin: 0 0 0 1rem;
 	background: #eee;
-	padding: 1rem .8rem;
+	width: 35%;
 }
-table.summary td.great_company.true a {
-	background: $green;
+#companySidebar h4 {
+	margin: 1rem 0 0 0;
 }
-table.summary td.great_company a:hover {
-	background: #ccc;
-}
+
+
