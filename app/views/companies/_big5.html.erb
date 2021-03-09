@@ -4,11 +4,11 @@
 	<span class="symbol"><%= link_to company.symbol, company %></span>
 	<%
 	debt = number_with_precision(company.debt_ratio, precision: 1)
-	revenue = number_with_precision(company.revenue_avg_growth5, precision: 1)
-	eps = number_with_precision(company.eps_avg_growth5, precision: 1)
-	fcf = number_with_precision(company.free_cash_flow_avg_growth5, precision: 1)
-	equity = number_with_precision(company.equity_avg_growth5, precision: 1)
-	roic = number_with_precision(company.roic_avg5, precision: 1)
+	revenue = number_with_precision(company.revenue_avg_growth3, precision: 1)
+	eps = number_with_precision(company.eps_avg_growth3, precision: 1)
+	fcf = number_with_precision(company.free_cash_flow_avg_growth3, precision: 1)
+	equity = number_with_precision(company.equity_avg_growth3, precision: 1)
+	roic = number_with_precision(company.roic_avg3, precision: 1)
 	%>
 	<span class="<%= debt_temperature(debt.to_f) %>"><%= debt %></span>
 	<span class="<%= big5_temperature(revenue.to_f) %>"><%= revenue %></span>

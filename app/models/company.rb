@@ -6,6 +6,7 @@ class Company < ApplicationRecord
   has_many :company_lists, -> { order 'position' }
   has_many :lists, through: :company_lists
   # acts_as_list :scope => :list
+  attr_accessor :magic_sort
   
   def gain
     unless self.transactions

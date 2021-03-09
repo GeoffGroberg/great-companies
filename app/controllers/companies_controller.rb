@@ -5,18 +5,64 @@ class CompaniesController < ApplicationController
   def index
     if params['screen']
       case params['screen']
+
       when "Great Companies"
         @companies = Company.where("great = true").order("symbol")
+
       when "Big 5"
         @companies = Company.where("roic_avg10 > 10 and equity_avg_growth10 > 10 and free_cash_flow_avg_growth10 > 10 and eps_avg_growth10 > 10 and revenue_avg_growth10 > 10").order("symbol")
+
       when "Big 5 Intrinsic Value Discounted"
         # @companies = Company.where("roic_avg10 > 10 and equity_avg_growth10 > 10 and free_cash_flow_avg_growth10 > 10 and eps_avg_growth10 > 10 and revenue_avg_growth10 > 10 and price <= intrinsic_value").sort_by {|c| c.price / c.intrinsic_value}
         @companies = Company.where("roic_avg10 > 10 and equity_avg_growth10 > 10 and free_cash_flow_avg_growth10 > 10 and eps_avg_growth10 > 10 and revenue_avg_growth10 > 10 and price <= intrinsic_value").order("symbol")
+
       when "Intrinsic Value Discounted"
         # @companies = Company.where('price > 0 and price < intrinsic_value').sort_by {|c| c.price / c.intrinsic_value}
         @companies = Company.where('price > 0 and price < intrinsic_value').order("symbol")
-      # else
-      #   @companies = Company.all
+
+      when "Magic Sort"
+        num_companies = 3000
+        # get the largest n companies
+        # sorted = Company.where('roic_avg5 > 0 and pe > 0 and description not like ?', "%china%").order('mktCap DESC').limit(num_companies)
+        sorted = Company.where('roic_avg3 > 0 and pe > 0 and (country = "US" or country = "CA") and intrinsic_value > price').order('mktCap DESC').limit(num_companies)
+        # sorted = Company.where('roic_avg10 > 0 and pe > 0').order('mktCap DESC').limit(num_companies)
+        
+        # sort by roic in reverse
+        # puts "sort by roic in reverse"
+        sorted = sorted.sort_by {|c| c.roic_avg3}.reverse
+        r = 0
+        sorted.each do |c|
+          r += 1
+          c.magic_sort = r
+          # puts "r: #{r} magic_sort: #{c.magic_sort} pe: #{c.pe} roic_avg5: #{c.roic_avg5} symbol: #{c.symbol}"
+        end
+
+        # sort by pe
+        # puts "sort by pe"
+        sorted = sorted.sort_by {|c| c.pe}
+        r = 0
+        sorted.each do |c|
+          r += 1
+          c.magic_sort += r
+          # puts "r: #{r} magic_sort: #{c.magic_sort} pe: #{c.pe} roic_avg5: #{c.roic_avg5} symbol: #{c.symbol}"
+        end
+
+        # sort by magic_sort
+        # puts "sort by magic_sort"
+        sorted = sorted.sort_by {|c| c.magic_sort}
+        sorted.each do |c|
+          # puts "r: #{r} magic_sort: #{c.magic_sort} pe: #{c.pe} roic_avg5: #{c.roic_avg5} symbol: #{c.symbol}"
+        end
+        
+        @companies = sorted
+
+      when "Growing Averages"
+        @companies = Company.where('roic_avg3 > roic_avg5 and roic_avg5 > roic_avg10 and intrinsic_value > price and country = "US"')
+
+      when "Over 15"
+        @companies = Company.where('roic_avg3 > 14 and roic_avg5 > 14 and roic_avg10 > 14 and equity_avg_growth3 > 14 and free_cash_flow_avg_growth3 > 14 and eps_avg_growth3 > 14 and revenue_avg_growth3 > 14 and intrinsic_value > price and (country = "US" or country = "CA")')
+
+
       end
     else
       @companies = Company.all
