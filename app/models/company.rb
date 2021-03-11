@@ -9,7 +9,7 @@ class Company < ApplicationRecord
   attr_accessor :magic_sort
   
   def gain
-    unless self.transactions
+    unless self.transactions.present?
       return nil
     end
     balance = 0.0
@@ -207,8 +207,8 @@ class Company < ApplicationRecord
     self.description = c['description']
     self.dcf = c['dcf']
     self.mktCap = c['mktCap']
-    self.volAvg = c[':volAvg']
-    self.industry = c[':industry']
+    self.volAvg = c['volAvg']
+    self.industry = c['industry']
     self.sector = c['sector']
     self.exchangeShortName = c['exchangeShortName']
     self.country = c['country']

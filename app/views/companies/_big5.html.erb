@@ -19,5 +19,8 @@
 
 	<span class="great_company <%= company.great %>"><%= link_to 'G', company %></span>
 	<span><%= number_with_precision(company.discount, precision: 1) %>%</span>
+	<span><% if company.gain %><%= number_with_precision(company.gain, precision: 1) %>%<% end %></span>
+	<%= company.sector %>:
+	<br><%= company.industry %>
 
 </div>
