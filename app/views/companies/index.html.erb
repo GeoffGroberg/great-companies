@@ -23,4 +23,4 @@
 <br>
 <%= link_to 'update quotes for these companies', url_for(screen: params['screen'], updateQuotes: true) %>
 <br>
-<%= link_to 'pull complete financials for these companies', updateCompanies_url(company_ids: @companies.ids) %>
+<%= link_to 'pull complete financials for these companies', updateCompanies_url(company_ids: @companies.pluck(:id)) %>
