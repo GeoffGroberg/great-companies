@@ -1,6 +1,6 @@
 require "test_helper"
 
-class UpdateAllCompaniesJobTest < ActiveJob::TestCase
+class UpdateCompaniesJobTest < ActiveJob::TestCase
   # test "the truth" do
   #   assert true
   # end

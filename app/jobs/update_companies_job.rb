@@ -1,4 +1,4 @@
-class UpdateAllCompaniesJob < ApplicationJob
+class UpdateCompaniesJob < ApplicationJob
   # include SuckerPunch::Job
   # workers 2
   queue_as :default

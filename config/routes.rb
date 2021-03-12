@@ -10,7 +10,7 @@ Rails.application.routes.draw do
   end
   # get '/company/:id/updateFinancials', to: 'companies#updateFinancials', as: 'updateFinancials'
   get '/company/addUSCompanies', to: 'companies#addUSCompanies', as: 'addUSCompanies'
-  get '/company/updateAllCompanies', to: 'companies#updateAllCompanies', as: 'updateAllCompanies'
+  get '/company/updateCompanies', to: 'companies#updateCompanies', as: 'updateCompanies'
   
   root 'welcome#index'
   

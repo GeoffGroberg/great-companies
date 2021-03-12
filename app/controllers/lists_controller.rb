@@ -8,7 +8,10 @@ class ListsController < ApplicationController
 
   # GET /lists/1 or /lists/1.json
   def show
-  end
+    # update quotes for companies in this list
+    Company::pullQuotes(@list.companies)
+    flash.now[:notice] = "Updated quotes at #{Time.now.strftime('%l:%M:%S %P')}."
+   end
 
   # GET /lists/new
   def new

@@ -21,14 +21,14 @@ class Company < ApplicationRecord
     ((balance / cost) - 1) * 100
   end
   
-  def pull(force: true) # TODO: change to false after we've pulled all companies
-    quote_result = self.pullQuote
+  def pull(force: false)
+    self.pullQuote
     financials_result = self.pullKeyMetrics(force: force)
     calculate_result = self.calculate # calculate growth rates from key metrics
-    if quote_result and financials_result
+    if financials_result
       return true
     else
-      puts "*** Unable to pull."
+      puts "*** Unable to pull financials."
       return false
     end
   end
@@ -186,7 +186,7 @@ class Company < ApplicationRecord
   end
   
   def pullProfile
-    body = apiCall(request: 'profile')
+    body = Company::apiCall(request: 'profile', symbols: self.symbol)
     unless body
       self.errors.add(:base, "Unable to pull company profile. No body.")
       return false
@@ -221,26 +221,53 @@ class Company < ApplicationRecord
   end
   
   def pullQuote
-    body = apiCall(request: 'quote')
-    unless body
-      self.errors.add(:base, "Unable to pull company quote. No body.")
-      return false
-    end
-    c = body.first
-    if c.nil?
-      self.errors.add(:base, "Unable to pull company quote. No data.")
-      return false
-    end
-    self.price = c['price'].to_f
-    self.pe = c['pe'].to_f
-    self.eps = c['eps'].to_f
-    if c['earningsAnnouncement'].present?
-      self.earnings_announcement = c['earningsAnnouncement'].to_datetime
-    end
-    self.save
-    return true
+    Company::pullQuotes([self])
   end
   
+  def self.pullQuotes(companies)
+    # we do these in batches of 100 or less
+    batch_size = 100
+    # symbols should be a comma separated list of stock symbols (or 1 symbol)
+    symbols = ''
+    x = 0
+    companies.each do |c|
+      x += 1
+      unless x == 1
+        symbols << ','
+      end
+      symbols << c.symbol
+      if x == batch_size
+        Company::pullQuoteBatch(symbols)
+        # reset for the next batch
+        x = 0
+        symbols = ''
+      end
+    end
+    # we need to pullQuoteBatch if we didn't reach batch_size
+    if x > 0
+      Company::pullQuoteBatch(symbols)
+    end
+  end
+
+  def self.pullQuoteBatch(symbols)
+    body = Company::apiCall(request: 'quote', symbols: symbols)
+    unless body.present?
+      puts "ERROR: Unable to pull company quote(s). No body."
+      return false
+    end
+    # make the API call and update companies
+    body.each do |quote|
+      company = Company.find_by(symbol: quote['symbol'])
+      company.price = quote['price'].to_f
+      company.pe = quote['pe'].to_f
+      company.eps = quote['eps'].to_f
+      if quote['earningsAnnouncement'].present?
+        company.earnings_announcement = quote['earningsAnnouncement'].to_datetime
+      end
+      company.save
+    end
+  end
+    
   def pullKeyMetrics(limit: 20, force: false)
     # is it time to pull anew?
     pull = true
@@ -267,7 +294,7 @@ class Company < ApplicationRecord
     end
     
     # get annual key metrics
-    key_metrics = apiCall(request: 'key-metrics', limit: limit)
+    key_metrics = Company::apiCall(request: 'key-metrics', symbols: self.symbol, limit: limit)
     unless key_metrics and key_metrics.first
       puts "*** Unable to pull annual key metrics."
       return false
@@ -292,7 +319,7 @@ class Company < ApplicationRecord
       end
     end
     # update the quarterly key metrics
-    key_metrics_q = apiCall(request: 'key-metrics', period: 'quarter', limit: 4)
+    key_metrics_q = Company::apiCall(request: 'key-metrics', symbols: self.symbol, period: 'quarter', limit: 4)
     unless key_metrics_q and key_metrics_q.length >= 4
       puts "*** Unable to pull quarterly key metrics."
       return false
@@ -352,8 +379,8 @@ class Company < ApplicationRecord
     avg
   end
   
-  def apiCall(request:, period: 'year', limit: 20)
-    url = "https://fmpcloud.io/api/v3/#{request}/#{self.symbol}?apikey=#{Rails.application.credentials.fmpcloudApiKey}&limit=#{limit}&period=#{period}"
+  def self.apiCall(request:, symbols:, period: 'year', limit: 20)
+    url = "https://fmpcloud.io/api/v3/#{request}/#{symbols}?apikey=#{Rails.application.credentials.fmpcloudApiKey}&limit=#{limit}&period=#{period}"
     begin
       puts "*** Starting API CALL: #{url}"
       response = HTTParty.get(url, { timeout: 5 })

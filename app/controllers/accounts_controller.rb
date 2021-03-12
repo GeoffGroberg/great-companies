@@ -8,6 +8,9 @@ class AccountsController < ApplicationController
 
   # GET /accounts/1 or /accounts/1.json
   def show
+    # update quote for active companies
+    Company::pullQuotes(@account.active_companies)
+    flash.now[:notice] = "Updated quotes at #{Time.now.strftime('%l:%M:%S %P')}."
   end
 
   # GET /accounts/new

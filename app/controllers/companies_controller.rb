@@ -71,10 +71,11 @@ class CompaniesController < ApplicationController
     else
       @companies = Company.all
     end
-    # @companies = Company.where("roic_avg10 > 10 and equity_avg_growth10 > 10 and free_cash_flow_avg_growth10 > 10 and eps_avg_growth10 > 10 and revenue_avg_growth10 > 10")
-    # @companies = Company.where("price < intrinsic_value and price < graham_number")
-    # @companies = Company.where("price < intrinsic_value")
-    # @companies = Company.where("price < graham_number")
+    # update quotes?
+    if params['updateQuotes'] == 'true'
+      Company::pullQuotes(@companies)
+      flash.now[:notice] = "Updated quotes at #{Time.now.strftime('%l:%M:%S %P')}."
+    end
   end
   
   # GET /companies/1 or /companies/1.json
@@ -118,8 +119,8 @@ class CompaniesController < ApplicationController
     end
   end
 
-  def updateAllCompanies
-    UpdateAllCompaniesJob.perform_later(params['company_ids'])
+  def updateCompanies
+    UpdateCompaniesJob.perform_later(params['company_ids'])
     respond_to do |format|
       num_companies = "all"
       if params['company_ids']
