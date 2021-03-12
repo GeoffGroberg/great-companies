@@ -24,6 +24,9 @@ class TransactionsController < ApplicationController
     @transaction = Transaction.new(transaction_params)
 
     respond_to do |format|
+      unless @transaction.price.present?
+        @transaction.price = @transaction.company.price
+      end
       if @transaction.save
         format.html { redirect_to @transaction, notice: "Transaction was successfully created." }
         format.json { render :show, status: :created, location: @transaction }

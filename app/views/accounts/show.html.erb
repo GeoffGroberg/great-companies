@@ -1,13 +1,13 @@
 <p id="notice"><%= notice %></p>
 
-<p>
-  <strong>Name:</strong>
-  <%= @account.name %>
-  
-  <% @account.active_companies.each do |c| %>
-  	<%= render 'companies/big5', company: c %>
-  <% end %>
-</p>
+<p><strong>Name:</strong> <%= @account.name %></p>
+
+<% avgGain = 0.0 %>
+<% @account.active_companies.each do |c| %>
+<%= render 'companies/big5', company: c %>
+<% avgGain += c.gain.to_f %>
+<% end %>
+<p><strong>average gain:</strong> <%= number_with_precision((avgGain / @account.active_companies.length), precision: 1) %>%</p>
 
 <%= link_to 'pull complete financials for these companies', updateCompanies_url(company_ids: @account.active_companies) %>
 

@@ -63,6 +63,9 @@ class CompaniesController < ApplicationController
       when "Growing Averages"
         @companies = Company.where('roic_avg3 > roic_avg5 and roic_avg5 > roic_avg10 and intrinsic_value > price and country = "US"')
 
+      when "Auto Trade"
+        @companies = Company.where('mktCap > 10000000000 and roic_avg3 > 0 and equity_avg_growth3 > 0 and free_cash_flow_avg_growth3 > 0 and eps_avg_growth3 > 0 and revenue_avg_growth3 > 0 and (debt_ratio < 5 and debt_ratio > -5) and (country = "US" or country = "CA") and ((1 - (price / intrinsic_value)) * 100) > 50 and ((1 - (price / intrinsic_value)) * 100) < 100').order('sector, industry')
+
       when "Over 15"
         @companies = Company.where('roic_avg3 > 14 and roic_avg5 > 14 and roic_avg10 > 14 and equity_avg_growth3 > 14 and free_cash_flow_avg_growth3 > 14 and eps_avg_growth3 > 14 and revenue_avg_growth3 > 14 and intrinsic_value > price and (country = "US" or country = "CA")')
 
@@ -74,7 +77,7 @@ class CompaniesController < ApplicationController
     # update quotes?
     if params['updateQuotes'] == 'true'
       Company::pullQuotes(@companies)
-      flash.now[:notice] = "Updated quotes at #{Time.now.strftime('%l:%M:%S %P')}."
+      redirect_to companies_url(screen: params['screen']), notice: "Updated quotes at #{Time.now.strftime('%l:%M:%S %P')}."
     end
   end
   

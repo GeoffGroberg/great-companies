@@ -8,11 +8,10 @@ class AccountsController < ApplicationController
 
   # GET /accounts/1 or /accounts/1.json
   def show
-    # update quote for active companies
-    result = Company::pullQuotes(@account.active_companies)
-    # reload the account, since it was probably updated
-    @account = Account.find(params[:id])
-    flash.now[:notice] = "Updated quotes at #{Time.now.strftime('%l:%M:%S %P')}."
+    if params['updateQuotes'] == 'true'
+      Company::pullQuotes(@account.active_companies)
+      redirect_to account_url, notice: "Updated quotes at #{Time.now.strftime('%l:%M:%S %P')}."
+    end
   end
 
   # GET /accounts/new

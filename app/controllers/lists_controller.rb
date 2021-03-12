@@ -8,11 +8,10 @@ class ListsController < ApplicationController
 
   # GET /lists/1 or /lists/1.json
   def show
-    # update quotes for companies in this list
-    Company::pullQuotes(@list.companies)
-    # reload the list, since it was probably updated
-    @list = List.find(params[:id])
-    flash.now[:notice] = "Updated quotes at #{Time.now.strftime('%l:%M:%S %P')}."
+    if params['updateQuotes'] == 'true'
+      Company::pullQuotes(@list.companies)
+      redirect_to list_url, notice: "Updated quotes at #{Time.now.strftime('%l:%M:%S %P')}."
+    end
    end
 
   # GET /lists/new
