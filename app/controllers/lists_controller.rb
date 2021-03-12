@@ -10,6 +10,8 @@ class ListsController < ApplicationController
   def show
     # update quotes for companies in this list
     Company::pullQuotes(@list.companies)
+    # reload the list, since it was probably updated
+    @list = List.find(params[:id])
     flash.now[:notice] = "Updated quotes at #{Time.now.strftime('%l:%M:%S %P')}."
    end
 

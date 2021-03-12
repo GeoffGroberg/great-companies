@@ -237,7 +237,7 @@ class Company < ApplicationRecord
       end
       symbols << c.symbol
       if x == batch_size
-        Company::pullQuoteBatch(symbols)
+        result = Company::pullQuoteBatch(symbols)
         # reset for the next batch
         x = 0
         symbols = ''
@@ -245,8 +245,9 @@ class Company < ApplicationRecord
     end
     # we need to pullQuoteBatch if we didn't reach batch_size
     if x > 0
-      Company::pullQuoteBatch(symbols)
+      result = Company::pullQuoteBatch(symbols)
     end
+    result
   end
 
   def self.pullQuoteBatch(symbols)
@@ -266,6 +267,7 @@ class Company < ApplicationRecord
       end
       company.save
     end
+    return true
   end
     
   def pullKeyMetrics(limit: 20, force: false)
