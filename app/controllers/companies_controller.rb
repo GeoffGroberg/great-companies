@@ -15,7 +15,12 @@ class CompaniesController < ApplicationController
       when "Big 5 Intrinsic Value Discounted"
         # @companies = Company.where("roic_avg10 > 10 and equity_avg_growth10 > 10 and free_cash_flow_avg_growth10 > 10 and eps_avg_growth10 > 10 and revenue_avg_growth10 > 10 and price <= intrinsic_value").sort_by {|c| c.price / c.intrinsic_value}
         # @companies = Company.where("roic_avg10 > 10 and equity_avg_growth10 > 10 and free_cash_flow_avg_growth10 > 10 and eps_avg_growth10 > 10 and revenue_avg_growth10 > 10 and price <= intrinsic_value").order("sector, industry")
-        @companies = Company.where("roic_avg10 > 0 and equity_avg_growth10 > 0 and free_cash_flow_avg_growth10 > 0 and eps_avg_growth10 > 0 and revenue_avg_growth10 > 0 and roic_avg5 > 0 and equity_avg_growth5 > 0 and free_cash_flow_avg_growth5 > 0 and eps_avg_growth5 > 0 and revenue_avg_growth5 > 0 and roic_avg3 > 0 and equity_avg_growth3 > 0 and free_cash_flow_avg_growth3 > 0 and eps_avg_growth3 > 0 and revenue_avg_growth3 > 0 and price <= intrinsic_value and country != 'CN'").order("sector, industry")
+        # @companies = Company.where("roic_avg10 > 0 and equity_avg_growth10 > 0 and free_cash_flow_avg_growth10 > 0 and eps_avg_growth10 > 0 and revenue_avg_growth10 > 0 and roic_avg5 > 0 and equity_avg_growth5 > 0 and free_cash_flow_avg_growth5 > 0 and eps_avg_growth5 > 0 and revenue_avg_growth5 > 0 and roic_avg3 > 0 and equity_avg_growth3 > 0 and free_cash_flow_avg_growth3 > 0 and eps_avg_growth3 > 0 and revenue_avg_growth3 > 0 and price <= intrinsic_value and country != 'CN'").order("sector, industry")
+        @companies = Company.where("roic_avg10 > 10 and equity_avg_growth10 > 10 and free_cash_flow_avg_growth10 > 10 and eps_avg_growth10 > 10 and revenue_avg_growth10 > 10 and roic_avg5 > 10 and equity_avg_growth5 > 10 and free_cash_flow_avg_growth5 > 10 and eps_avg_growth5 > 10 and revenue_avg_growth5 > 10 and roic_avg3 > 10 and equity_avg_growth3 > 10 and free_cash_flow_avg_growth3 > 10 and eps_avg_growth3 > 10 and revenue_avg_growth3 > 10 and price <= intrinsic_value").order("sector, industry")
+
+      when "Big 5 Small 500"
+        @companies = Company.where("roic_avg3 > 10 and free_cash_flow_avg_growth3 > 10 and debt_ratio < 5 and price <= intrinsic_value").order("mktCap ASC").limit(500)
+
 
       when "Big 5, 5 Year, Discounted"
         @companies = Company.where("ipoDate > '2011-01-01' and roic_avg5 > 0 and equity_avg_growth5 > 0 and free_cash_flow_avg_growth5 > 0 and eps_avg_growth5 > 0 and revenue_avg_growth5 > 0 and roic_avg3 > 0 and equity_avg_growth3 > 0 and free_cash_flow_avg_growth3 > 0 and eps_avg_growth3 > 0 and revenue_avg_growth3 > 0 and price <= intrinsic_value and country != 'CN'").order("sector, industry")
@@ -28,7 +33,8 @@ class CompaniesController < ApplicationController
         num_companies = 3000
         # get the largest n companies
         # sorted = Company.where('roic_avg5 > 0 and pe > 0 and description not like ?', "%china%").order('mktCap DESC').limit(num_companies)
-        sorted = Company.where('roic_avg3 > 0 and pe > 0 and (country = "US" or country = "CA") and intrinsic_value > price').order('mktCap DESC').limit(num_companies)
+        # sorted = Company.where('roic_avg3 > 0 and pe > 0 and (country = "US" or country = "CA") and intrinsic_value > price').order('mktCap DESC').limit(num_companies)
+        sorted = Company.where('roic_avg3 > 0 and pe > 0 and (country = "US" or country = "CA") and mktCap > 50000000').order('mktCap DESC').limit(num_companies)
         # sorted = Company.where('roic_avg10 > 0 and pe > 0').order('mktCap DESC').limit(num_companies)
         
         # sort by roic in reverse

@@ -40,10 +40,15 @@ class Company < ApplicationRecord
     key_metrics.each_with_index do |v, k|
       if key_metrics.size > k + 1
         prev = key_metrics[k + 1]
-        key_metrics[k].equity_growth = ((v.equity / prev.equity) - 1) * 100
-        key_metrics[k].eps_growth = ((v.eps / prev.eps) - 1) * 100
-        key_metrics[k].revenue_growth = ((v.revenue / prev.revenue) - 1) * 100
-        key_metrics[k].free_cash_flow_growth = ((v.free_cash_flow / prev.free_cash_flow) - 1) * 100
+
+        key_metrics[k].equity_growth = percent_change(v.equity, prev.equity)
+
+        key_metrics[k].eps_growth = percent_change(v.eps, prev.eps)
+        
+        key_metrics[k].revenue_growth = percent_change(v.revenue, prev.revenue)
+        
+        key_metrics[k].free_cash_flow_growth = percent_change(v.free_cash_flow, prev.free_cash_flow)
+
         key_metrics[k].save
       end
     end
@@ -348,6 +353,13 @@ class Company < ApplicationRecord
   
   private
   
+  def percent_change(new_num, old_num)
+    new_num = new_num.to_f
+    old_num = old_num.to_f
+    percent_change = (old_num - new_num) / old_num.abs() * -100
+    percent_change
+  end
+
   def avg(varName, periods)
     # calculate yearly averages
     key_metrics = self.key_metrics.where(quarterly: false).order("date DESC")
