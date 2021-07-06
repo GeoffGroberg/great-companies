@@ -1,7 +1,8 @@
+
+<h1>Account: <%= @account.name %></h1>
 <p id="notice"><%= notice %></p>
 
-<p><strong>Name:</strong> <%= @account.name %></p>
-
+<%= render 'companies/big5Header' %>
 <% avgGain = 0.0 %>
 <% @account.active_companies.each do |c| %>
 <%= render 'companies/big5', company: c %>
@@ -10,8 +11,3 @@
 <p><strong>average gain:</strong> <%= number_with_precision((avgGain / @account.active_companies.length), precision: 1) %>%</p>
 
 <%= link_to 'pull complete financials for these companies', updateCompanies_url(company_ids: @account.active_companies) %>
-
-<br>
-<br>
-<%= link_to 'Edit', edit_account_path(@account) %> |
-<%= link_to 'Back', accounts_path %>

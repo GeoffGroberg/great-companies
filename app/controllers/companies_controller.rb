@@ -35,7 +35,8 @@ class CompaniesController < ApplicationController
         # get the largest n companies
         # sorted = Company.where('roic_avg5 > 0 and pe > 0 and description not like ?', "%china%").order('mktCap DESC').limit(num_companies)
         # sorted = Company.where('roic_avg3 > 0 and pe > 0 and (country = "US" or country = "CA") and intrinsic_value > price').order('mktCap DESC').limit(num_companies)
-        sorted = Company.where('roic_avg3 > 0 and pe > 0) and mktCap > 50000000').order('mktCap DESC').limit(num_companies)
+        # sorted = Company.where('roic_avg3 > 0 and equity_avg_growth3 > 0 and free_cash_flow_avg_growth3 > 0 and eps_avg_growth3 > 0 and revenue_avg_growth3 > 0 and debt_ratio < 10 and pe > 0 and mktCap > 50000000').order('mktCap DESC').limit(num_companies)
+        sorted = Company.where('roic_avg3 > 0 and equity_avg_growth3 > 0 and free_cash_flow_avg_growth3 > 0 and eps_avg_growth3 > 0 and revenue_avg_growth3 > 0 and debt_ratio < 10 and pe > 0').order('mktCap DESC').limit(num_companies)
         # sorted = Company.where('roic_avg10 > 0 and pe > 0').order('mktCap DESC').limit(num_companies)
         
         # sort by roic in reverse
@@ -68,7 +69,7 @@ class CompaniesController < ApplicationController
         @companies = sorted
 
       when "Growing Averages"
-        @companies = Company.where('roic_avg3 > roic_avg5 and roic_avg5 > roic_avg10 and intrinsic_value > price')
+        @companies = Company.where('roic_avg3 > roic_avg5 and roic_avg5 > roic_avg10 and intrinsic_value > price').order('sector, industry')
 
       when "Auto Trade"
         @companies = Company.where('mktCap > 10000000000 and roic_avg3 > 0 and equity_avg_growth3 > 0 and free_cash_flow_avg_growth3 > 0 and eps_avg_growth3 > 0 and revenue_avg_growth3 > 0 and (debt_ratio < 5 and debt_ratio > -5) and ((1 - (price / intrinsic_value)) * 100) > 50 and ((1 - (price / intrinsic_value)) * 100) < 100').order('sector, industry')

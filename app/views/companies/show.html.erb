@@ -1,161 +1,160 @@
 <p id="notice"><%= notice %></p>
 <p id="alert"><%= alert %></p>
 
-<div id='companySidebar'>
-
-	<%= link_to "Update Financials", company_path(@company, company: {pullFinancials: :true}), method: :put %>
+<div id='companyInfo'>
+	
+	<h1><%= @company.symbol %> - <%= @company.name %> (<%= @company.exchangeShortName %>, <%= @company.country %>) <% if @company.website %><%= link_to "Website", @company.website %><% end %></h1>
 	<br>
-	<% if @company.great %>
-	<%= link_to "Unmark Great", company_path(@company, company: {great: :false}), method: :put %>
-	<% else %>
-	<%= link_to "Mark as Great", company_path(@company, company: {great: :true}), method: :put %>
-	<% end %>
 	
-	<h4>Add To List</h4>
-	<% lists = List.all %>
-	<% lists.each do |l| %>
-		<% unless l.companies.exists?(@company.id) %>
-			<%= link_to l.name, addCompanyToList_path(l.id, company_id: @company.id), method: :put %>
-			<br>
+	<div id='companySidebar'>
+		<%= link_to "Update Financials", company_path(@company, company: {pullFinancials: :true}), method: :put %>
+		<br>
+		<% if @company.great %>
+		<%= link_to "Unmark Great", company_path(@company, company: {great: :false}), method: :put %>
+		<% else %>
+		<%= link_to "Mark as Great", company_path(@company, company: {great: :true}), method: :put %>
 		<% end %>
-	<% end %>
-
-	<h4>Remove From List</h4>
-	<% lists.each do |l| %>
-		<% if l.companies.exists?(@company.id) %>
-			<%= link_to l.name, removeCompanyFromList_path(l.id, company_id: @company.id), method: :put %>
-			<br>
+	
+		<h4>Add To List</h4>
+		<% lists = List.all %>
+		<% lists.each do |l| %>
+			<% unless l.companies.exists?(@company.id) %>
+				<%= link_to l.name, addCompanyToList_path(l.id, company_id: @company.id), method: :put %>
+				<br>
+			<% end %>
 		<% end %>
-	<% end %>
 
-	<p>
-	  <h4>Intrinsic Value:
-	  <%= number_with_precision(@company.intrinsic_value, precision: 2) %></h4>
-	  <%= render 'valuation_form', company: @company %>
-	</p>
+		<h4>Remove From List</h4>
+		<% lists.each do |l| %>
+			<% if l.companies.exists?(@company.id) %>
+				<%= link_to l.name, removeCompanyFromList_path(l.id, company_id: @company.id), method: :put %>
+				<br>
+			<% end %>
+		<% end %>
 
-	<div class='notes'>
-	<h4>Notes</h4>
-	<%= render @company.notes %>
-	<%= render 'notes/new', company: @company %>
+		<p>
+		  <h4>Intrinsic Value:
+		  <%= number_with_precision(@company.intrinsic_value, precision: 2) %></h4>
+		  <%= render 'valuation_form', company: @company %>
+		</p>
+
+		<div class='notes'>
+		<h4>Notes</h4>
+		<%= render @company.notes %>
+		<%= render 'notes/new', company: @company %>
+		</div>
 	</div>
-	
+
+
+	<p class="description">
+	  <strong>Description:</strong>
+	  <%= @company.description %>
+	</p>
+	<p>
+	  <strong>IPO Date:</strong>
+	  <%= @company.ipoDate %>
+	</p>
+	<p>
+	  <strong>Market Cap:</strong>
+	  <%= number_to_human(@company.mktCap) %>
+	</p>
+	<p>
+	  <strong>Price:</strong>
+	  <%= number_with_precision(@company.price, precision: 2) %>
+	  (discount: <%= number_with_precision(@company.discount, precision: 1) %>%)
+	</p>
+	<!-- <p>
+	  <strong>Graham Number:</strong>
+	  <%= number_with_precision(@company.graham_number, precision: 2) %>
+	</p> -->
+
+	<table class="metrics">
+		<caption>Averages (per share)</caption>
+		<thead>
+			<tr>
+				<th scope="col"></th>
+				<th scope="col">Revenue</th>
+				<th scope="col">EPS</th>
+				<th scope="col">FCF</th>
+				<th scope="col">Equity</th>
+				<th scope="col">ROIC</th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr>
+				<td>3 yr</td>
+				<td><%= number_to_percentage(@company.revenue_avg_growth3, precision: 1) %></td>
+				<td><%= number_to_percentage(@company.eps_avg_growth3, precision: 1) %></td>
+				<td><%= number_to_percentage(@company.free_cash_flow_avg_growth3, precision: 1) %></td>
+				<td><%= number_to_percentage(@company.equity_avg_growth3, precision: 1) %></td>
+				<td><%= number_to_percentage(@company.roic_avg3, precision: 1) %></td>
+			</tr>
+			<tr>
+				<td>5 yr</td>
+				<td><%= number_to_percentage(@company.revenue_avg_growth5, precision: 1) %></td>
+				<td><%= number_to_percentage(@company.eps_avg_growth5, precision: 1) %></td>
+				<td><%= number_to_percentage(@company.free_cash_flow_avg_growth5, precision: 1) %></td>
+				<td><%= number_to_percentage(@company.equity_avg_growth5, precision: 1) %></td>
+				<td><%= number_to_percentage(@company.roic_avg5, precision: 1) %></td>
+			</tr>
+			<tr>
+				<td>10 yr</td>
+				<td><%= number_to_percentage(@company.revenue_avg_growth10, precision: 1) %></td>
+				<td><%= number_to_percentage(@company.eps_avg_growth10, precision: 1) %></td>
+				<td><%= number_to_percentage(@company.free_cash_flow_avg_growth10, precision: 1) %></td>
+				<td><%= number_to_percentage(@company.equity_avg_growth10, precision: 1) %></td>
+				<td><%= number_to_percentage(@company.roic_avg10, precision: 1) %></td>
+			</tr>
+		</tbody>
+	</table>
+
+	<table class="metrics">
+		<caption>Key Metrics (per share)</caption>
+		<thead>
+			<tr>
+				<th scope="col">Date</th>
+				<th scope="col">Revenue</th>
+				<th scope="col">EPS</th>
+				<th scope="col">FCF</th>
+				<th scope="col">Equity</th>
+
+				<th scope="col">Debt</th>
+				<th scope="col">Revenue Growth</th>
+				<th scope="col">EPS Growth</th>
+				<th scope="col">FCF Growth</th>
+				<th scope="col">Equity Growth</th>
+				<th scope="col">ROIC</th>
+			</tr>
+		</thead>
+		<tbody>
+		<% @company.key_metrics.order("quarterly DESC, date DESC").each_with_index do |v, k| %>
+			<% unless k > 14 %>
+			<tr class="<%= v.quarterly ? 'quarterly' : '' %>">
+				<td><%= v.quarterly ? "Q " + v.date.to_s : v.date %></td>
+				<td><%= number_with_precision(v.revenue, precision: 1) %></td>
+				<td><%= number_with_precision(v.eps, precision: 1) %></td>
+				<td><%= number_with_precision(v.free_cash_flow, precision: 1) %></td>
+				<td><%= number_with_precision(v.equity, precision: 1) %></td>
+
+				<td class="key"><%= number_with_precision(v.debt_ratio, precision: 1) %></td>
+			<% if @company.key_metrics.size > k + 1 %>
+				<td class="key"><%= number_to_percentage(v.revenue_growth, precision: 1) %></td>
+				<td class="key"><%= number_to_percentage(v.eps_growth, precision: 1) %></td>
+				<td class="key"><%= number_to_percentage(v.free_cash_flow_growth, precision: 1) %></td>
+				<td class="key"><%= number_to_percentage(v.equity_growth, precision: 1) %></td>
+			<% else %>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+			<% end %>
+				<td class="key"><%= number_to_percentage(v.roic, precision: 1) %></td>
+			</tr>
+			<% end %>
+		<% end %>
+		</tbody>
+	</table>
 </div>
 
-
-
-<h2><%= @company.symbol %> - <%= @company.name %> (<%= @company.exchangeShortName %>) <% if @company.website %><%= link_to "Website", @company.website %><% end %> <%= @company.country %></h2>
-
-
-
-<p>
-  <strong>Description:</strong>
-  <%= @company.description %>
-</p>
-<p>
-  <strong>IPO Date:</strong>
-  <%= @company.ipoDate %>
-</p>
-<p>
-  <strong>Market Cap:</strong>
-  <%= number_to_human(@company.mktCap) %>
-</p>
-<p>
-  <strong>Price:</strong>
-  <%= number_with_precision(@company.price, precision: 2) %>
-  (discount: <%= number_with_precision(@company.discount, precision: 1) %>%)
-</p>
-<!-- <p>
-  <strong>Graham Number:</strong>
-  <%= number_with_precision(@company.graham_number, precision: 2) %>
-</p> -->
-
-<table class="metrics">
-	<caption>Averages (per share)</caption>
-	<thead>
-		<tr>
-			<th scope="col"></th>
-			<th scope="col">Revenue</th>
-			<th scope="col">EPS</th>
-			<th scope="col">FCF</th>
-			<th scope="col">Equity</th>
-			<th scope="col">ROIC</th>
-		</tr>
-	</thead>
-	<tbody>
-		<tr>
-			<td>3 yr</td>
-			<td><%= number_to_percentage(@company.revenue_avg_growth3, precision: 1) %></td>
-			<td><%= number_to_percentage(@company.eps_avg_growth3, precision: 1) %></td>
-			<td><%= number_to_percentage(@company.free_cash_flow_avg_growth3, precision: 1) %></td>
-			<td><%= number_to_percentage(@company.equity_avg_growth3, precision: 1) %></td>
-			<td><%= number_to_percentage(@company.roic_avg3, precision: 1) %></td>
-		</tr>
-		<tr>
-			<td>5 yr</td>
-			<td><%= number_to_percentage(@company.revenue_avg_growth5, precision: 1) %></td>
-			<td><%= number_to_percentage(@company.eps_avg_growth5, precision: 1) %></td>
-			<td><%= number_to_percentage(@company.free_cash_flow_avg_growth5, precision: 1) %></td>
-			<td><%= number_to_percentage(@company.equity_avg_growth5, precision: 1) %></td>
-			<td><%= number_to_percentage(@company.roic_avg5, precision: 1) %></td>
-		</tr>
-		<tr>
-			<td>10 yr</td>
-			<td><%= number_to_percentage(@company.revenue_avg_growth10, precision: 1) %></td>
-			<td><%= number_to_percentage(@company.eps_avg_growth10, precision: 1) %></td>
-			<td><%= number_to_percentage(@company.free_cash_flow_avg_growth10, precision: 1) %></td>
-			<td><%= number_to_percentage(@company.equity_avg_growth10, precision: 1) %></td>
-			<td><%= number_to_percentage(@company.roic_avg10, precision: 1) %></td>
-		</tr>
-	</tbody>
-</table>
-
-<table class="metrics">
-	<caption>Key Metrics (per share)</caption>
-	<thead>
-		<tr>
-			<th scope="col">Date</th>
-			<th scope="col">Revenue</th>
-			<th scope="col">EPS</th>
-			<th scope="col">FCF</th>
-			<th scope="col">Equity</th>
-
-			<th scope="col">Debt</th>
-			<th scope="col">Revenue Growth</th>
-			<th scope="col">EPS Growth</th>
-			<th scope="col">FCF Growth</th>
-			<th scope="col">Equity Growth</th>
-			<th scope="col">ROIC</th>
-		</tr>
-	</thead>
-	<tbody>
-	<% @company.key_metrics.order("quarterly DESC, date DESC").each_with_index do |v, k| %>
-		<% unless k > 14 %>
-		<tr class="<%= v.quarterly ? 'quarterly' : '' %>">
-			<td><%= v.quarterly ? "Q " + v.date.to_s : v.date %></td>
-			<td><%= number_with_precision(v.revenue, precision: 1) %></td>
-			<td><%= number_with_precision(v.eps, precision: 1) %></td>
-			<td><%= number_with_precision(v.free_cash_flow, precision: 1) %></td>
-			<td><%= number_with_precision(v.equity, precision: 1) %></td>
-
-			<td class="key"><%= number_with_precision(v.debt_ratio, precision: 1) %></td>
-		<% if @company.key_metrics.size > k + 1 %>
-			<td class="key"><%= number_to_percentage(v.revenue_growth, precision: 1) %></td>
-			<td class="key"><%= number_to_percentage(v.eps_growth, precision: 1) %></td>
-			<td class="key"><%= number_to_percentage(v.free_cash_flow_growth, precision: 1) %></td>
-			<td class="key"><%= number_to_percentage(v.equity_growth, precision: 1) %></td>
-		<% else %>
-			<td></td>
-			<td></td>
-			<td></td>
-			<td></td>
-		<% end %>
-			<td class="key"><%= number_to_percentage(v.roic, precision: 1) %></td>
-		</tr>
-		<% end %>
-	<% end %>
-	</tbody>
-</table>
-
-<%= link_to 'Edit', edit_company_path(@company) %> |
-<%= link_to 'Back', companies_path %> |
+<!-- <%= link_to 'Edit', edit_company_path(@company) %> |
+<%= link_to 'Back', companies_path %> | -->

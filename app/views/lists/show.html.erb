@@ -1,6 +1,8 @@
+
+<h1>List: <%= @list.name %></h1>
 <p id="notice"><%= notice %></p>
 
-<h2>List: <%= @list.name %></h2>
+<%= render 'companies/big5Header' %>
 <div class="companySummaries" data-controller="drag" data-drag-url="/list/:id/moveCompany/:company_id">
 <% @list.companies.order("company_lists.position asc").each do |c| %>
 	<%= render 'companies/big5', company: c, list: @list %>

@@ -101,17 +101,17 @@ $t-10: $red;
 	color: #aaa;
 	height: 1.5rem;
 }
-.big5 span {
+.big5 span.square {
 	display: flex;
 	justify-content: center;
 	align-items: center;
 	width: 3.5rem;
 	height: 3.5rem;
 	margin: 1px;
+	flex-shrink: 0;
 }
 .big5 .symbol a {
 	font-size: 1rem;
-	color: #777;
 }
 .big5 .great_company a {
 	font-size: 2rem;
@@ -129,14 +129,37 @@ $t-10: $red;
 .big5 span a {
 	text-decoration: none;
 	font-weight: bold;
-	color: #fff;
+/*	color: #fff;*/
 }
 .big5 span a:hover {
 	background: inherit;
 	color: #000;
-/*	text-decoration: underline;*/
 }
 
+.big5 span.sectorAndIndustry {
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	color: #555;
+	max-height: 3.5rem;
+/*	margin: 0 0 0 1rem;*/
+	overflow: hidden;
+	text-align: left;
+}
+.big5 span.sectorAndIndustry p.sector, .big5 span.sectorAndIndustry p.industry {
+	margin: 0;
+}
+.big5 span.sectorAndIndustry p.sector {
+/*	font-weight: bold;*/
+	line-height: .9rem;
+	white-space: nowrap;
+}
+.big5 span.sectorAndIndustry p.industry {
+	font-size: .7rem;
+	line-height: .8rem;
+	white-space: nowrap;
+/*	text-transform: uppercase;*/
+}
 
 
 /* financial tables */
@@ -172,14 +195,22 @@ table.metrics td.key {
 }
 
 
-
+#companyInfo {
+	text-align: left;
+}
+#companyInfo p.description {
+/*	max-height: 20rem;*/
+/*	overflow: auto;*/
+}
 /* sidebar */
 #companySidebar {
 	float: right;
 	padding: 1rem;
 	margin: 0 0 0 1rem;
-	background: #eee;
+	background: #f0f3f7;
 	width: 35%;
+	border-radius: .5rem;
+	border: 3px solid #e0e8ef;;
 }
 #companySidebar h4 {
 	margin: 1rem 0 0 0;

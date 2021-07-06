@@ -1,3 +1,23 @@
 <div class="navBar">
-	<%= link_to 'Home', root_path %>
+	<ul>
+		<li>
+			<%= link_to 'Home', root_path %>
+		</li>
+		<li>
+			<%= link_to 'Accounts', accounts_path %>
+			<ul class="accounts">
+			<% Account.all.each do |a| %>
+			<li><%= link_to a.name, account_path(a, updateQuotes: true) %></li>
+			<% end %>
+			</ul>
+		</li>
+		<li>
+			<%= link_to 'Lists', lists_path %>
+			<ul class="lists">
+			<% List.all.each do |l| %>
+			<li><%= link_to l.name, list_path(l, updateQuotes: true) %></li>
+			<% end %>
+			</ul>
+		</li>
+	</ul>
 </div>

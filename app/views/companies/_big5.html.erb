@@ -1,7 +1,6 @@
 
 <div <% if defined?(list) %>data-id="<%= list.id %>" data-company_id="<%= company.id %>"<% end %> class="big5">
-
-	<span class="symbol"><%= link_to company.symbol, company %></span>
+	<span class="square symbol"><%= link_to company.symbol, company %></span>
 	<%
 	debt = number_with_precision(company.debt_ratio, precision: 1)
 	revenue = number_with_precision(company.revenue_avg_growth3, precision: 1)
@@ -10,17 +9,18 @@
 	equity = number_with_precision(company.equity_avg_growth3, precision: 1)
 	roic = number_with_precision(company.roic_avg3, precision: 1)
 	%>
-	<span class="<%= debt_temperature(debt.to_f) %>"><%= debt %></span>
-	<span class="<%= big5_temperature(revenue.to_f) %>"><%= revenue %></span>
-	<span class="<%= big5_temperature(eps.to_f) %>"><%= eps %></span>
-	<span class="<%= big5_temperature(fcf.to_f) %>"><%= fcf %></span>
-	<span class="<%= big5_temperature(equity.to_f) %>"><%= equity %></span>
-	<span class="<%= big5_temperature(roic.to_f) %>"><%= roic %></span>
+	<span class="square <%= debt_temperature(debt.to_f) %>"><%= debt %></span>
+	<span class="square <%= big5_temperature(revenue.to_f) %>"><%= revenue %></span>
+	<span class="square <%= big5_temperature(eps.to_f) %>"><%= eps %></span>
+	<span class="square <%= big5_temperature(fcf.to_f) %>"><%= fcf %></span>
+	<span class="square <%= big5_temperature(equity.to_f) %>"><%= equity %></span>
+	<span class="square <%= big5_temperature(roic.to_f) %>"><%= roic %></span>
 
-	<span class="great_company <%= company.great %>"><%= link_to 'G', company %></span>
-	<span><%= number_with_precision(company.discount, precision: 1) %>%</span>
-	<span><% if company.gain %><%= number_with_precision(company.gain, precision: 1) %>%<% end %></span>
-	<%= company.sector %>:
-	<br><%= company.industry %>
-
+	<span class="square great_company <%= company.great %>"><%= link_to 'G', company %></span>
+	<span class="square discount"><%= number_with_precision(company.discount, precision: 1) %>%</span>
+	<span class="square gain"><% if company.gain %><%= number_with_precision(company.gain, precision: 1) %>%<% end %></span>
+	<span class="sectorAndIndustry">
+		<p class="sector"><%= company.sector %>:</p>
+		<p class="industry"><%= company.industry %></p>
+	</span>
 </div>

@@ -2,20 +2,9 @@
 
 <h1><%= params['screen'] %></h1>
 
-<p><%= @companies.count %> Companies</p>
+<p class="centered"><%= @companies.count %> Companies</p>
 
-<div class="big5 header">
-<span></span>
-<span>Debt</span>
-<span>Revenue</span>
-<span>EPS</span>
-<span>FCF</span>
-<span>Equity</span>
-<span>ROIC</span>
-<span></span>
-<span>Discount</span>
-</div>
-
+<%= render 'companies/big5Header' %>
 <% @companies.each do |c| %>
   <%= render 'companies/big5', company: c %>
 <% end %>
