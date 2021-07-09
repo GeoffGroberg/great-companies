@@ -26,6 +26,9 @@ class CompaniesController < ApplicationController
       when "Big 5, 5 Year, Discounted"
         @companies = Company.where("ipoDate > '2011-01-01' and roic_avg5 > 0 and equity_avg_growth5 > 0 and free_cash_flow_avg_growth5 > 0 and eps_avg_growth5 > 0 and revenue_avg_growth5 > 0 and roic_avg3 > 0 and equity_avg_growth3 > 0 and free_cash_flow_avg_growth3 > 0 and eps_avg_growth3 > 0 and revenue_avg_growth3 > 0 and price <= intrinsic_value").order("sector, industry")
 
+      when "Big 5, 3 Year, Discounted"
+        @companies = Company.where("roic_avg3 > 0 and equity_avg_growth3 > 0 and free_cash_flow_avg_growth3 > 0 and eps_avg_growth3 > 0 and revenue_avg_growth3 > 0 and price <= intrinsic_value and eps_growth_rate < 20").order("sector, industry")
+
       when "Intrinsic Value Discounted"
         # @companies = Company.where('price > 0 and price < intrinsic_value').sort_by {|c| c.price / c.intrinsic_value}
         @companies = Company.where('price > 0 and price < intrinsic_value').order("sector, industry")
@@ -72,7 +75,7 @@ class CompaniesController < ApplicationController
         @companies = Company.where('roic_avg3 > roic_avg5 and roic_avg5 > roic_avg10 and intrinsic_value > price').order('sector, industry')
 
       when "Auto Trade"
-        @companies = Company.where('mktCap > 10000000000 and roic_avg3 > 0 and equity_avg_growth3 > 0 and free_cash_flow_avg_growth3 > 0 and eps_avg_growth3 > 0 and revenue_avg_growth3 > 0 and (debt_ratio < 5 and debt_ratio > -5) and ((1 - (price / intrinsic_value)) * 100) > 50 and ((1 - (price / intrinsic_value)) * 100) < 100').order('sector, industry')
+        @companies = Company.where('mktCap > 1000000000 and roic_avg3 > 0 and equity_avg_growth3 > 0 and free_cash_flow_avg_growth3 > 0 and eps_avg_growth3 > 0 and revenue_avg_growth3 > 0 and roic_avg5 > 0 and equity_avg_growth5 > 0 and free_cash_flow_avg_growth5 > 0 and eps_avg_growth5 > 0 and revenue_avg_growth5 > 0 and roic_avg10 > 0 and equity_avg_growth10 > 0 and free_cash_flow_avg_growth10 > 0 and eps_avg_growth10 > 0 and revenue_avg_growth10 > 0 and (debt_ratio < 5 and debt_ratio > -5) and ((1 - (price / intrinsic_value)) * 100) > 50').order('sector, industry')
 
       when "Over 15"
         @companies = Company.where('roic_avg3 > 14 and roic_avg5 > 14 and roic_avg10 > 14 and equity_avg_growth3 > 14 and free_cash_flow_avg_growth3 > 14 and eps_avg_growth3 > 14 and revenue_avg_growth3 > 14 and intrinsic_value > price')

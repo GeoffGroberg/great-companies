@@ -3,57 +3,60 @@
 
 <h1>Great Companies</h1>
 
-<div class="home_section">
-	<h2>Screeners</h2>
-	<%= link_to "Big 5", companies_path(screen: "Big 5") %>
-	<br>
-	<%= link_to "Big 5 Intrinsic Value Discounted", companies_path(screen: "Big 5 Intrinsic Value Discounted") %>
-	<br>
-	<%= link_to "Big 5, 5 Year, Discounted", companies_path(screen: "Big 5, 5 Year, Discounted") %>
-	<br>
-	<%= link_to "Big 5 Small 500", companies_path(screen: "Big 5 Small 500") %>
-	<br>
-	<%= link_to "Great Companies", companies_path(screen: "Great Companies") %>
-	<br>
-	<%= link_to "Intrinsic Value Discounted", companies_path(screen: "Intrinsic Value Discounted") %>
-	<br>
-	<%= link_to "Magic Sort", companies_path(screen: "Magic Sort") %>
-	<br>
-	<%= link_to "Growing Averages", companies_path(screen: "Growing Averages") %>
-	<br>
-	<%= link_to "Auto Trade", companies_path(screen: "Auto Trade") %>
-	<br>
-	<%= link_to "Over 15", companies_path(screen: "Over 15") %>
-	<br>
-	<%= link_to "All Companies", companies_path() %>
+<div class="home_sections">
+	<div class="home_section">
+		<h2>Screeners</h2>
+		<%= link_to "Big 5", companies_path(screen: "Big 5") %>
+		<br>
+		<%= link_to "Big 5 Intrinsic Value Discounted", companies_path(screen: "Big 5 Intrinsic Value Discounted") %>
+		<br>
+		<%= link_to "Big 5, 5 Year, Discounted", companies_path(screen: "Big 5, 5 Year, Discounted") %>
+		<br>
+		<%= link_to "Big 5, 3 Year, Discounted", companies_path(screen: "Big 5, 3 Year, Discounted") %>
+		<br>
+		<%= link_to "Big 5 Small 500", companies_path(screen: "Big 5 Small 500") %>
+		<br>
+		<%= link_to "Great Companies", companies_path(screen: "Great Companies") %>
+		<br>
+		<%= link_to "Intrinsic Value Discounted", companies_path(screen: "Intrinsic Value Discounted") %>
+		<br>
+		<%= link_to "Magic Sort", companies_path(screen: "Magic Sort") %>
+		<br>
+		<%= link_to "Growing Averages", companies_path(screen: "Growing Averages") %>
+		<br>
+		<%= link_to "Auto Trade", companies_path(screen: "Auto Trade") %>
+		<br>
+		<%= link_to "Over 15", companies_path(screen: "Over 15") %>
+		<br>
+		<%= link_to "All Companies", companies_path() %>
+	</div>
+
+	<div class="home_section">
+		<h2>Utilities</h2>
+
+		<%= link_to 'Accounts', accounts_path %>:
+		<ul class="accounts">
+		<% Account.all.each do |a| %>
+		<li><%= link_to a.name, account_path(a, updateQuotes: true) %></li>
+		<% end %>
+		</ul>
+
+		<%= link_to 'Lists', lists_path %>:
+		<ul class="lists">
+		<% List.all.each do |l| %>
+		<li><%= link_to l.name, list_path(l, updateQuotes: true) %></li>
+		<% end %>
+		</ul>
+
+		<br>
+		<%= link_to 'Pull Financials for All Companies', updateCompanies_url, data: { confirm: 'Are you sure?' } %>
+		<br>
+		<%= link_to 'Add Companies', new_company_path %>
+		<br>
+		<%= link_to 'Transactions', transactions_path %>
+	</div>
+
+	<div class="home_section">
+		<%= render 'companies/form', company: Company.new %>
+	</div>
 </div>
-
-<div class="home_section">
-	<h2>Utilities</h2>
-
-	<%= link_to 'Accounts', accounts_path %>:
-	<ul class="accounts">
-	<% Account.all.each do |a| %>
-	<li><%= link_to a.name, account_path(a, updateQuotes: true) %></li>
-	<% end %>
-	</ul>
-
-	<%= link_to 'Lists', lists_path %>:
-	<ul class="lists">
-	<% List.all.each do |l| %>
-	<li><%= link_to l.name, list_path(l, updateQuotes: true) %></li>
-	<% end %>
-	</ul>
-
-	<br>
-	<%= link_to 'Pull Financials for All Companies', updateCompanies_url, data: { confirm: 'Are you sure?' } %>
-	<br>
-	<%= link_to 'Add Companies', new_company_path %>
-	<br>
-	<%= link_to 'Transactions', transactions_path %>
-</div>
-
-<div class="home_section">
-	<%= render 'companies/form', company: Company.new %>
-</div>
-
