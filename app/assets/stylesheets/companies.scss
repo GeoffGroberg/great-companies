@@ -108,11 +108,13 @@ $t-10: $red;
 	display: flex;
 	justify-content: center;
 	align-items: center;
+	align-content: center;
 	width: 3.5rem;
 	height: 3.5rem;
 	margin: 1px;
 	flex-shrink: 0;
 	line-height: 1;
+	flex-wrap: wrap;
 }
 .big5 .symbol a {
 	font-size: 1rem;

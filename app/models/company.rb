@@ -175,15 +175,31 @@ class Company < ApplicationRecord
       y += 1
       intrinsicValue = intrinsicValue * (1 - r)
     end
+    # if intrinsicValue.infinite? or intrinsicValue.to_f.nan?
+    #   return nil
+    # end
     intrinsicValue
   end
 
   def discount
     if self.intrinsic_value and self.price
-      discount = (1 - (self.price / self.intrinsic_value)) * 100
+      # discount = (1 - (self.price / self.intrinsic_value)) * 100
+      discount = ((self.intrinsic_value - self.price) / self.intrinsic_value) * 100
       # if discount < -9000
       #   discount = nil
       # end
+    else
+      discount = nil
+    end
+    # if discount.to_f.nan?
+    #   return nil
+    # end
+    discount
+  end
+  
+  def dcf_discount
+    if self.dcf and self.price
+      discount = ((self.dcf - self.price) / self.dcf) * 100
     else
       discount = nil
     end
@@ -375,7 +391,8 @@ class Company < ApplicationRecord
     key_metrics.each do |metric|
       n += 1
       break if n > periods
-      unless metric[varName].nil?
+      # don't include nil or infinite metrics
+      unless metric[varName].nil? or metric[varName].infinite?
         metrics << metric[varName]
       end
     end

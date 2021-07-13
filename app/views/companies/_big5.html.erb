@@ -32,7 +32,11 @@
 	<span class="square <%= big5_temperature(roic3.to_f) %>"><%= roic3 %><br><%= roic5 %><br><%= roic10 %></span>
 
 	<span class="square great_company <%= company.great %>"><%= link_to 'G', company %></span>
-	<span class="square discount"><%= number_with_precision(company.discount, precision: 1) %>%</span>
+	<span class="square discount">
+		<span><%= number_with_precision(company.discount, precision: 1) %>%</span>
+		<br>
+		<span class='light'><%= number_with_precision(company.dcf_discount, precision: 1) %>%</span>
+	</span>
 	<span class="square gain"><% if company.gain %><%= number_with_precision(company.gain, precision: 1) %>%<% end %></span>
 	<span class="sectorAndIndustry">
 		<p class="sector"><%= company.sector %>:</p>

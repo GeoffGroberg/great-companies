@@ -19,6 +19,7 @@ class UpdateCompaniesJob < ApplicationJob
       puts "Pulling update for company #{x}, #{company.symbol}"
       begin
         company.pull
+        # company.calculate # only re-calculate, don't pull new data
       rescue
         job_errors << "Unable to pull update for #{company.symbol}."
       end

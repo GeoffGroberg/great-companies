@@ -60,8 +60,14 @@
 	</p>
 	<p>
 	  <strong>Price:</strong>
-	  <%= number_with_precision(@company.price, precision: 2) %>
+	  $<%= number_with_precision(@company.price, precision: 2) %>
 	  (discount: <%= number_with_precision(@company.discount, precision: 1) %>%)
+	  <!-- <%= @company.intrinsic_value %> -->
+	</p>
+	<p>
+	  <strong>dcf:</strong>
+	  $<%= number_with_precision(@company.dcf, precision: 2) %>
+	  (dcf discount: <%= number_with_precision(@company.dcf_discount, precision: 1) %>%)
 	</p>
 	<!-- <p>
 	  <strong>Graham Number:</strong>
