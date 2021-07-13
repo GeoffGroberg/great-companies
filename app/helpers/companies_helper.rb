@@ -92,7 +92,7 @@ module CompaniesHelper
     when 0.0..0.5
       t = 't9'
     when -Float::INFINITY...0.0
-      t = 't10'
+      t = 't-10'
     end
     t
   end

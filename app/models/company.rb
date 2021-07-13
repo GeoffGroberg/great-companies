@@ -71,8 +71,8 @@ class Company < ApplicationRecord
     self.revenue_avg_growth3 = avg('revenue_growth', 3)
 
     # debt ratio
-    if key_metrics and key_metrics[1]
-      self.debt_ratio = key_metrics[1].debt_ratio
+    if key_metrics and key_metrics[0]
+      self.debt_ratio = key_metrics[0].debt_ratio
     end
 
     # graham number
