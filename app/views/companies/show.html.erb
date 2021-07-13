@@ -113,12 +113,12 @@
 		<thead>
 			<tr>
 				<th scope="col">Date</th>
+				<th scope="col">Debt</th>
 				<th scope="col">Revenue</th>
 				<th scope="col">EPS</th>
 				<th scope="col">FCF</th>
 				<th scope="col">Equity</th>
 
-				<th scope="col">Debt</th>
 				<th scope="col">Revenue Growth</th>
 				<th scope="col">EPS Growth</th>
 				<th scope="col">FCF Growth</th>
@@ -131,12 +131,13 @@
 			<% unless k > 14 %>
 			<tr class="<%= v.quarterly ? 'quarterly' : '' %>">
 				<td><%= v.quarterly ? "Q " + v.date.to_s : v.date %></td>
+				<td class="key"><%= number_with_precision(v.debt_ratio, precision: 1) %></td>
+
 				<td><%= number_with_precision(v.revenue, precision: 1) %></td>
 				<td><%= number_with_precision(v.eps, precision: 1) %></td>
 				<td><%= number_with_precision(v.free_cash_flow, precision: 1) %></td>
 				<td><%= number_with_precision(v.equity, precision: 1) %></td>
 
-				<td class="key"><%= number_with_precision(v.debt_ratio, precision: 1) %></td>
 			<% if @company.key_metrics.size > k + 1 %>
 				<td class="key"><%= number_to_percentage(v.revenue_growth, precision: 1) %></td>
 				<td class="key"><%= number_to_percentage(v.eps_growth, precision: 1) %></td>
