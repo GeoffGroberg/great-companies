@@ -189,11 +189,14 @@ class Company < ApplicationRecord
       #   discount = nil
       # end
     else
-      discount = nil
+      return nil
     end
     # if discount.to_f.nan?
     #   return nil
     # end
+    if self.intrinsic_value < 0
+      discount = discount.abs() * -1
+    end
     discount
   end
   

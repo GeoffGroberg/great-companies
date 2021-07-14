@@ -83,6 +83,9 @@ class CompaniesController < ApplicationController
       when "dcf"
         @companies = Company.where('dcf > price and intrinsic_value > price and price > 0 and dcf > 0 and intrinsic_value > 0 and country = "US"').sort_by {|c| 1 / ((c.dcf - c.price) / c.dcf)}
         
+      when "large us"
+        @companies = Company.where('country = "US" and dcf > price').order('mktCap DESC').limit(500)
+        
 
 
       end
