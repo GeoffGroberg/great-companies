@@ -1,5 +1,3 @@
-<p id="notice"><%= notice %></p>
-
 <h1>List: <%= @list.name %></h1>
 
 <% @companies = @list.companies.order("company_lists.position asc") %>

@@ -12,6 +12,8 @@
 
   <body>
 	<%= render 'layouts/navbar' %>
+	<% if alert %><div id="alert"><%= alert %></div><% end %>
+	<% if notice %><div id="notice"><%= notice %></div><% end %>
 	<div class="container">
 		<div class="content">
 			<%= yield %>
