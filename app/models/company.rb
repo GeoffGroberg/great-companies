@@ -21,7 +21,7 @@ class Company < ApplicationRecord
     ((balance / cost) - 1) * 100
   end
   
-  def pull(force: false)
+  def pull(force: true)
     self.pullQuote
     financials_result = self.pullKeyMetrics(force: force)
     calculate_result = self.calculate # calculate growth rates from key metrics
@@ -54,6 +54,7 @@ class Company < ApplicationRecord
     end
 
     # yearly averages
+    self.dividend_yield_avg = avg('dividend_yield', 3)
     self.roic_avg10 = avg('roic', 10)
     self.roic_avg5 = avg('roic', 5)
     self.roic_avg3 = avg('roic', 3)
@@ -341,6 +342,7 @@ class Company < ApplicationRecord
         key_metric.debt_ratio = longTermDebt / key_metric.free_cash_flow
         key_metric.graham_number = key_metrics[x-1]['grahamNumber'].to_f
         key_metric.pe_ratio = key_metrics[x-1]['peRatio'].to_f
+        key_metric.dividend_yield = key_metrics[x-1]['dividendYield'].to_f * 100
         key_metric.save
       end
     end
@@ -365,6 +367,7 @@ class Company < ApplicationRecord
       key_metric.pe_ratio = key_metric_q['peRatio'].to_f
       key_metric.save
     end
+
     self.financials_pulled_at = DateTime.now
     return true
   end

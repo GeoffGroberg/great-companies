@@ -1,0 +1,22 @@
+<p class="centered"><%= @companies.count %> Companies</p>
+
+<div class='big5_list'>
+	<%= render 'companies/big5Header' %>
+
+	
+	<% if @list %>
+	<!-- make this list of companies sortable -->
+	<div class="companySummaries" data-controller="drag" data-drag-url="/list/:id/moveCompany/:company_id">
+	<% end %>
+
+	<!-- list of companies -->
+	<% @companies.each do |c| %>
+	  <%= render 'companies/big5', company: c, list: @list %>
+	<% end %>
+
+	<% if @list %>
+	<!-- end sortable list -->
+	</div>
+	<% end %>
+
+</div>

@@ -81,10 +81,14 @@ class CompaniesController < ApplicationController
         @companies = Company.where('roic_avg3 > 14 and roic_avg5 > 14 and roic_avg10 > 14 and equity_avg_growth3 > 14 and free_cash_flow_avg_growth3 > 14 and eps_avg_growth3 > 14 and revenue_avg_growth3 > 14 and intrinsic_value > price')
 
       when "dcf"
-        @companies = Company.where('dcf > price and intrinsic_value > price and price > 0 and dcf > 0 and intrinsic_value > 0 and country = "US"').sort_by {|c| 1 / ((c.dcf - c.price) / c.dcf)}
+        @companies = Company.where('dcf > price and intrinsic_value > price and price > 0 and dcf > 0 and intrinsic_value > 0').sort_by {|c| 1 / ((c.dcf - c.price) / c.dcf)}
         
       when "large us"
-        @companies = Company.where('country = "US" and dcf > price').order('mktCap DESC').limit(500)
+        # @companies = Company.where('country = "US" and dcf > price and intrinsic_value > price').order('mktCap DESC').limit(500)
+        @companies = Company.where('country = "US" and dcf > price and intrinsic_value > price').sort_by {|c| 1 / ((c.dcf - c.price) / c.dcf)}
+        
+      when "dividends"
+        @companies = Company.where('dividend_yield_avg > 0').order('dividend_yield_avg DESC').limit(100)
         
 
 

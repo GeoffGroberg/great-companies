@@ -65,9 +65,13 @@
 	  <!-- <%= @company.intrinsic_value %> -->
 	</p>
 	<p>
-	  <strong>dcf:</strong>
+	  <strong>DCF:</strong>
 	  $<%= number_with_precision(@company.dcf, precision: 2) %>
 	  (dcf discount: <%= number_with_precision(@company.dcf_discount, precision: 1) %>%)
+	</p>
+
+	<p>
+	  <strong>Dividend Yield Avg (3 yr):</strong> <%= number_to_percentage(@company.dividend_yield_avg, precision: 1) %>
 	</p>
 	<!-- <p>
 	  <strong>Graham Number:</strong>
@@ -124,6 +128,7 @@
 				<th scope="col">EPS</th>
 				<th scope="col">FCF</th>
 				<th scope="col">Equity</th>
+				<th scope="col">Yield</th>
 
 				<th scope="col">Revenue Growth</th>
 				<th scope="col">EPS Growth</th>
@@ -143,6 +148,7 @@
 				<td><%= number_with_precision(v.eps, precision: 1) %></td>
 				<td><%= number_with_precision(v.free_cash_flow, precision: 1) %></td>
 				<td><%= number_with_precision(v.equity, precision: 1) %></td>
+				<td><%= number_to_percentage(v.dividend_yield, precision: 1) %></td>
 
 			<% if @company.key_metrics.size > k + 1 %>
 				<td class="key"><%= number_to_percentage(v.revenue_growth, precision: 1) %></td>

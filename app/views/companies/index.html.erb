@@ -2,12 +2,7 @@
 
 <h1><%= params['screen'] %></h1>
 
-<p class="centered"><%= @companies.count %> Companies</p>
-
-<%= render 'companies/big5Header' %>
-<% @companies.each do |c| %>
-  <%= render 'companies/big5', company: c %>
-<% end %>
+<%= render 'companies/big5_list', companies: @companies %>
 
 <br>
 <%= link_to 'update quotes for these companies', url_for(screen: params['screen'], updateQuotes: true) %>

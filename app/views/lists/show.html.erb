@@ -1,13 +1,10 @@
-
-<h1>List: <%= @list.name %></h1>
 <p id="notice"><%= notice %></p>
 
-<%= render 'companies/big5Header' %>
-<div class="companySummaries" data-controller="drag" data-drag-url="/list/:id/moveCompany/:company_id">
-<% @list.companies.order("company_lists.position asc").each do |c| %>
-	<%= render 'companies/big5', company: c, list: @list %>
-<% end %>
-</div>
+<h1>List: <%= @list.name %></h1>
+
+<% @companies = @list.companies.order("company_lists.position asc") %>
+
+<%= render 'companies/big5_list', companies: @companies, list: @list %>
 
 <br>
 <%= link_to 'Edit', edit_list_path(@list) %> |

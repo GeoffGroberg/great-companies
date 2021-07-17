@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_03_06_175120) do
+ActiveRecord::Schema.define(version: 2021_07_17_013416) do
 
   create_table "accounts", force: :cascade do |t|
     t.string "name"
@@ -68,6 +68,7 @@ ActiveRecord::Schema.define(version: 2021_03_06_175120) do
     t.boolean "is_actively_trading"
     t.boolean "is_etf"
     t.string "website"
+    t.decimal "dividend_yield_avg"
   end
 
   create_table "company_lists", force: :cascade do |t|
@@ -98,6 +99,7 @@ ActiveRecord::Schema.define(version: 2021_03_06_175120) do
     t.decimal "free_cash_flow_growth"
     t.decimal "graham_number"
     t.decimal "pe_ratio"
+    t.decimal "dividend_yield"
     t.index "\"company\", \"date\"", name: "index_annual_key_financials_on_company_and_date"
     t.index ["company_id"], name: "index_key_metrics_on_company_id"
   end

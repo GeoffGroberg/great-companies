@@ -93,6 +93,10 @@ $t-10: $red;
 	background: $t-10;
 }
 
+.big5_list {
+	width: 45rem;
+	margin: auto;
+}
 
 .big5 {
 	display: flex;
@@ -148,8 +152,7 @@ $t-10: $red;
 	justify-content: center;
 	color: #555;
 	max-height: 3.5rem;
-/*	margin: 0 0 0 1rem;*/
-	overflow: hidden;
+	overflow: visible;
 	text-align: left;
 }
 .big5 span.sectorAndIndustry p.sector, .big5 span.sectorAndIndustry p.industry {
