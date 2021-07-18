@@ -13,7 +13,8 @@
  *= require_tree .
  *= require_self
  */
-$base: hsl(220, 20, 70);
+$base: hsl(220, 20, 58);
+$link: hsl(220, 50, 50);
 $success: hsl(160, 30%, 50%);
 $alert: hsl(0, 40%, 50%);
 
@@ -57,11 +58,11 @@ h1 {
 	text-align: left;
 }
 a, a:visited {
-	color: darken($base, 20%);
+	color: $link;
 	text-decoration: none;
 }
 a:hover {
-	color: darken($base, 40%);
+	color: adjust-color($link, $lightness: 0%, $saturation: 100%, $hue: -20%);
 	background: none;
 	text-decoration: underline;
 }

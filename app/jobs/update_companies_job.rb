@@ -20,6 +20,7 @@ class UpdateCompaniesJob < ApplicationJob
       begin
         company.pull
         # company.calculate # only re-calculate, don't pull new data
+        # company.pullInsiderTrading # only pull insider trading
       rescue
         job_errors << "Unable to pull update for #{company.symbol}."
       end

@@ -68,7 +68,11 @@
 	</p>
 
 	<p>
-	  <strong>Dividend Yield Avg (3 yr):</strong> <%= number_to_percentage(@company.dividend_yield_avg, precision: 1) %>
+	  <strong>Dividend Yield Avg:</strong> <%= number_to_percentage(@company.dividend_yield_avg, precision: 1) %>
+	</p>
+
+	<p>
+	  <strong>Insider Trading:</strong> <%= number_to_percentage(@company.insider_trading, precision: 1) %>
 	</p>
 	<!-- <p>
 	  <strong>Graham Number:</strong>

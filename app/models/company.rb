@@ -21,9 +21,10 @@ class Company < ApplicationRecord
     ((balance / cost) - 1) * 100
   end
   
-  def pull(force: true)
+  def pull(force: false)
     self.pullQuote
     financials_result = self.pullKeyMetrics(force: force)
+    insider_trading_result = self.pullInsiderTrading()
     calculate_result = self.calculate # calculate growth rates from key metrics
     if financials_result
       return true
@@ -54,20 +55,20 @@ class Company < ApplicationRecord
     end
 
     # yearly averages
-    self.dividend_yield_avg = avg('dividend_yield', 3)
-    self.roic_avg10 = avg('roic', 10)
+    self.dividend_yield_avg = avg('dividend_yield', 5, drop_hi = true)
+    self.roic_avg10 = avg('roic', 10, drop_hi = true, drop_low = true)
     self.roic_avg5 = avg('roic', 5)
     self.roic_avg3 = avg('roic', 3)
-    self.equity_avg_growth10 = avg('equity_growth', 10)
+    self.equity_avg_growth10 = avg('equity_growth', 10, drop_hi = true, drop_low = true)
     self.equity_avg_growth5 = avg('equity_growth', 5)
     self.equity_avg_growth3 = avg('equity_growth', 3)
-    self.free_cash_flow_avg_growth10 = avg('free_cash_flow_growth', 10)
+    self.free_cash_flow_avg_growth10 = avg('free_cash_flow_growth', 10, drop_hi = true, drop_low = true)
     self.free_cash_flow_avg_growth5 = avg('free_cash_flow_growth', 5)
     self.free_cash_flow_avg_growth3 = avg('free_cash_flow_growth', 3)
-    self.eps_avg_growth10 = avg('eps_growth', 10)
+    self.eps_avg_growth10 = avg('eps_growth', 10, drop_hi = true, drop_low = true)
     self.eps_avg_growth5 = avg('eps_growth', 5)
     self.eps_avg_growth3 = avg('eps_growth', 3)
-    self.revenue_avg_growth10 = avg('revenue_growth', 10)
+    self.revenue_avg_growth10 = avg('revenue_growth', 10, drop_hi = true, drop_low = true)
     self.revenue_avg_growth5 = avg('revenue_growth', 5)
     self.revenue_avg_growth3 = avg('revenue_growth', 3)
 
@@ -372,6 +373,49 @@ class Company < ApplicationRecord
     return true
   end
     
+  def pullInsiderTrading
+    url = "https://fmpcloud.io/api/v4/insider-trading/?symbol=#{self.symbol}&apikey=#{Rails.application.credentials.fmpcloudApiKey}&limit=100"
+    begin
+      puts "*** Starting API CALL: #{url}"
+      response = HTTParty.get(url, { timeout: 5 })
+      puts "*** Finished"
+    rescue
+      puts "*** ERROR: failed api call: #{url}"
+      return false
+    end
+    # puts response.body, response.code, response.message, response.headers.inspect
+    unless response.code == 200
+      self.errors.add(:base, "*** Unsuccessful API call. Response code: #{response.code}")
+      return false
+    end
+    body = JSON.parse(response.body)
+
+    unless body
+      self.errors.add(:base, "Unable to pull insider-trading. No body.")
+      return false
+    end
+    t = body.first
+    if t.nil?
+      self.errors.add(:base, "Unable to pull insider-trading. No data.")
+      return false
+    end
+    # add up acquisition and dispositions
+    a = 0
+    d = 0
+    body.each do |t|
+      if t['acquistionOrDisposition'] == 'A'
+        a += t['securitiesTransacted'].to_f
+      elsif t['acquistionOrDisposition'] == 'D'
+        d += t['securitiesTransacted'].to_f
+      end
+    end
+    puts("*** INSIDER TRADING for #{self.symbol} (Acquisitions vs Dispositions)")
+    puts("a: #{a}     d: #{d}")
+    insider_trading = ((a - d) / (a + 0.001)) * 100
+    self.insider_trading = insider_trading
+    self.save
+    self.insider_trading
+  end
   
   private
   
@@ -382,7 +426,7 @@ class Company < ApplicationRecord
     percent_change
   end
 
-  def avg(varName, periods)
+  def avg(varName, periods, drop_hi = false, drop_low = false)
     # calculate yearly averages
     key_metrics = self.key_metrics.where(quarterly: false).order("date DESC")
     unless key_metrics.first
@@ -402,13 +446,19 @@ class Company < ApplicationRecord
         metrics << metric[varName]
       end
     end
-    if periods >= 10 # for periods >= 10, drop hi and low
+    if drop_hi
       metrics.delete(metrics.max)
-      metrics.delete(metrics.min)
-    # elsif periods >= 5 # for periods >= 5, drop hi
-    # # else # drop hi
-    #   metrics.delete(metrics.max)
     end
+    if drop_low
+      metrics.delete(metrics.min)
+    end
+    # if periods >= 10 # for periods >= 10, drop hi and low
+    #   metrics.delete(metrics.max)
+    #   metrics.delete(metrics.min)
+    # # elsif periods >= 5 # for periods >= 5, drop hi
+    # # # else # drop hi
+    # #   metrics.delete(metrics.max)
+    # end
     if metrics.length == 0
       return nil
     end
