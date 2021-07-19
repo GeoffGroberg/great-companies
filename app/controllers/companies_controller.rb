@@ -88,7 +88,7 @@ class CompaniesController < ApplicationController
         @companies = Company.where('country = "US" and dcf > price and intrinsic_value > price').sort_by {|c| 1 / ((c.dcf - c.price) / c.dcf)}
         
       when "dividends"
-        @companies = Company.where('dividend_yield_avg > 0 and intrinsic_value > price').order('dividend_yield_avg DESC').limit(200)
+        @companies = Company.where('dividend_yield_avg > 0 and roic_avg3 > 10 and equity_avg_growth3 > 10 and intrinsic_value > price').order('dividend_yield_avg DESC').limit(200)
         
       when "insider trading"
         @companies = Company.where('insider_trading > 0 and intrinsic_value > price').order('insider_trading DESC').limit(200)
