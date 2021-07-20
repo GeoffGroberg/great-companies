@@ -120,6 +120,9 @@ $t-10: $red;
 	line-height: 1;
 	flex-wrap: wrap;
 }
+.big5 span.square > span {
+	flex-basis: 100%;
+}
 .big5 .symbol a {
 	font-size: 1rem;
 }

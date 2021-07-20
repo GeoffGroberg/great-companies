@@ -43,7 +43,7 @@ h1 {
 }
 
 .light {
-	opacity: .2;
+	opacity: .3;
 }
 .home_sections {
 	display: flex;
@@ -67,6 +67,9 @@ a:hover {
 	text-decoration: underline;
 }
 
+.small {
+	font-size: .6rem;
+}
 
 #notice, #alert {
 	text-align: center;

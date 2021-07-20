@@ -8,6 +8,7 @@ class AccountsController < ApplicationController
 
   # GET /accounts/1 or /accounts/1.json
   def show
+    @account.calculate_companies
     if params['updateQuotes'] == 'true'
       Company::pullQuotes(@account.active_companies)
       redirect_to account_url, notice: "Updated quotes at #{Time.now.strftime('%l:%M:%S %P')}."

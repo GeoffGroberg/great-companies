@@ -7,8 +7,11 @@ class Company < ApplicationRecord
   has_many :lists, through: :company_lists
   # acts_as_list :scope => :list
   attr_accessor :magic_sort
+  attr_accessor :gain_percent, :gain_amount, :cost, :shares, :market_value
   
-  def gain(account = nil)
+  def account_process(account = nil)
+    # get company info related to an account
+    # such as # of shares, market value, gain, ...
     if !account
       return nil
     end
@@ -28,9 +31,11 @@ class Company < ApplicationRecord
       end
     end
     balance += (shares * self.price)
-    gain_percent = balance / cost * 100
-    gain_amount = balance
-    return gain_percent, gain_amount, cost
+    self.gain_percent = balance / cost * 100
+    self.gain_amount = balance
+    self.cost = cost
+    self.shares = shares
+    self.market_value = self.shares * self.price
   end
   
   def pull(force: false)

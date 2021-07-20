@@ -4,9 +4,13 @@
 
 <%= render 'companies/big5_list', companies: @companies, account: @account %>
 
-<% gain_percent, gain_amount, cost = @account.gain %>
-<p><strong>capital gain:</strong> <%= number_with_precision(gain_percent, precision: 1) %>% <%= number_to_currency(gain_amount) %></p>
+<br>
+<strong>capital gain:</strong> <%= number_with_precision(@account.gain_percent, precision: 1) %>% <%= number_to_currency(@account.gain_amount) %>
 
+<br>
+<strong>market value:</strong> <%= number_to_currency(@account.market_value) %>
+
+<br>
 <%= link_to 'pull complete financials for these companies', updateCompanies_url(company_ids: @companies) %>
 
 <% @companies = @account.inactive_companies %>
