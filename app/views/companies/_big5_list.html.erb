@@ -11,7 +11,7 @@
 
 	<!-- list of companies -->
 	<% @companies.each do |c| %>
-	  <%= render 'companies/big5', company: c, list: @list %>
+	  <%= render 'companies/big5', company: c, list: @list, account: @account %>
 	<% end %>
 
 	<% if @list %>

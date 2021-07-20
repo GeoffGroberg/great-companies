@@ -36,7 +36,13 @@
 		<br>
 		<span class='light'><%= number_with_precision(company.dcf_discount, precision: 1) %>%</span>
 	</span>
-	<span class="square gain"><% if company.gain %><%= number_with_precision(company.gain, precision: 1) %>%<% end %></span>
+	<% gain_percent, gain_amount = company.gain(account) %>
+	<span class="square gain">
+		<% if gain_percent %>
+		<span><%= number_with_precision(gain_percent, precision: 1) %>%</span>
+		<!-- <span><%= number_to_currency(gain_amount) %></span> -->
+		<% end %>
+	</span>
 	<span class="sectorAndIndustry">
 		<p class="sector"><%= company.sector %>:</p>
 		<p class="industry"><%= company.industry %></p>

@@ -8,17 +8,29 @@ class Company < ApplicationRecord
   # acts_as_list :scope => :list
   attr_accessor :magic_sort
   
-  def gain
-    unless self.transactions.present?
+  def gain(account = nil)
+    if !account
       return nil
     end
-    balance = 0.0
-    cost = 0.0
-    self.transactions.each do |t|
-      cost += (t.number_of_shares * t.price)
-      balance += (t.number_of_shares * self.price)
+    unless account.transactions.present?
+      return nil
     end
-    ((balance / cost) - 1) * 100
+    cost = 0.0
+    balance = 0.0
+    shares = 0
+    account.transactions.each do |t|
+      if t.company == self
+        if t.number_of_shares > 0
+          cost += t.number_of_shares * t.price
+        end
+        balance -= t.number_of_shares * t.price
+        shares += t.number_of_shares
+      end
+    end
+    balance += (shares * self.price)
+    gain_percent = balance / cost * 100
+    gain_amount = balance
+    return gain_percent, gain_amount, cost
   end
   
   def pull(force: false)
