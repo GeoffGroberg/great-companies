@@ -11,6 +11,9 @@ class Company < ApplicationRecord
   
   def institutional_shares_percent
     p = (self.institutional_shares.to_f / self.shares_outstanding.to_f) * 100
+    if p.infinite? or p.nan?
+      p = 0.0
+    end
     p
   end
   

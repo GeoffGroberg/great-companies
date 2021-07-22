@@ -96,6 +96,9 @@ class CompaniesController < ApplicationController
       when "early bird"
         @companies = Company.where('revenue_avg_growth3 > 10 and revenue_avg_growth5 is NULL and price > 0').limit(200)
         
+      when "low IH"
+        @companies = Company.where('price > 0 and shares_outstanding > 0 and intrinsic_value > price and revenue_avg_growth3 > 0 and revenue_avg_growth5 > 0 and roic_avg3 > 10 and roic_avg5 > 10 and equity_avg_growth3 > 0 and equity_avg_growth5 > 0 and free_cash_flow_avg_growth3 > 0 and free_cash_flow_avg_growth5 > 0 and eps_avg_growth3 > 0 and eps_avg_growth5 > 0').sort_by {|c| c.institutional_shares_percent}
+        
 
 
       end

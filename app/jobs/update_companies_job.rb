@@ -18,10 +18,10 @@ class UpdateCompaniesJob < ApplicationJob
       x += 1
       puts "Pulling update for company #{x}, #{company.symbol}"
       begin
-        # company.pull
+        company.pull
         # company.calculate # only re-calculate, don't pull new data
         # company.pullInsiderTrading # only pull insider trading
-        company.pullInstitutionalShares # only pull institutional shares
+        # company.pullInstitutionalShares # only pull institutional shares
       rescue
         job_errors << "Unable to pull update for #{company.symbol}."
       end
