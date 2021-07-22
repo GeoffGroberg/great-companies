@@ -1,6 +1,6 @@
 <h1>Account: <%= @account.name %></h1>
 
-<% @companies = @account.active_companies %>
+<% @companies = @account.active_companies.sort_by {|c| -c.account_market_value} %>
 
 <%= render 'companies/big5_list', companies: @companies, account: @account %>
 
@@ -13,7 +13,7 @@
 <br>
 <%= link_to 'pull complete financials for these companies', updateCompanies_url(company_ids: @companies) %>
 
-<% @companies = @account.inactive_companies %>
+<% @companies = @account.inactive_companies.sort_by {|c| -c.account_gain_amount} %>
 <% if @companies.count() > 0 %>
 <br>
 <br>

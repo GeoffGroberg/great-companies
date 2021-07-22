@@ -75,6 +75,10 @@
 	  <strong>Insider Trading:</strong> <%= number_to_percentage(@company.insider_trading, precision: 1) %>
 	</p>
 
+	<p>
+	  <strong>Institutional Shares:</strong> <%= number_to_percentage(@company.institutional_shares_percent, precision: 1) %>
+	</p>
+
 	<!-- <p>
 	  <strong>Earnings Announcement:</strong> <%= @company.earnings_announcement %>
 	</p> -->

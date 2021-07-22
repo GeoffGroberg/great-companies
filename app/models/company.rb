@@ -7,41 +7,47 @@ class Company < ApplicationRecord
   has_many :lists, through: :company_lists
   # acts_as_list :scope => :list
   attr_accessor :magic_sort
-  attr_accessor :gain_percent, :gain_amount, :cost, :shares, :market_value
+  attr_accessor :account_gain_percent, :account_gain_amount, :account_cost, :account_shares, :account_market_value
+  
+  def institutional_shares_percent
+    p = (self.institutional_shares.to_f / self.shares_outstanding.to_f) * 100
+    p
+  end
   
   def account_process(account = nil)
     # get company info related to an account
-    # such as # of shares, market value, gain, ...
+    # such as # of account_shares, market value, gain, ...
     if !account
       return nil
     end
     unless account.transactions.present?
       return nil
     end
-    cost = 0.0
+    account_cost = 0.0
     balance = 0.0
-    shares = 0
+    account_shares = 0
     account.transactions.each do |t|
       if t.company == self
         if t.number_of_shares > 0
-          cost += t.number_of_shares * t.price
+          account_cost += t.number_of_shares * t.price
         end
         balance -= t.number_of_shares * t.price
-        shares += t.number_of_shares
+        account_shares += t.number_of_shares
       end
     end
-    balance += (shares * self.price)
-    self.gain_percent = balance / cost * 100
-    self.gain_amount = balance
-    self.cost = cost
-    self.shares = shares
-    self.market_value = self.shares * self.price
+    balance += (account_shares * self.price)
+    self.account_gain_percent = balance / account_cost * 100
+    self.account_gain_amount = balance
+    self.account_cost = account_cost
+    self.account_shares = account_shares
+    self.account_market_value = self.account_shares * self.price
   end
   
   def pull(force: false)
     self.pullQuote
     financials_result = self.pullKeyMetrics(force: force)
     insider_trading_result = self.pullInsiderTrading()
+    institutional_shares = self.pullInstitutionalShares()
     calculate_result = self.calculate # calculate growth rates from key metrics
     if financials_result
       return true
@@ -308,6 +314,7 @@ class Company < ApplicationRecord
       if quote['earningsAnnouncement'].present?
         company.earnings_announcement = quote['earningsAnnouncement'].to_datetime
       end
+      company.shares_outstanding = quote['sharesOutstanding'].to_i
       company.save
     end
     return true
@@ -432,6 +439,40 @@ class Company < ApplicationRecord
     self.insider_trading = insider_trading
     self.save
     self.insider_trading
+  end
+  
+  def pullInstitutionalShares
+    url = "https://fmpcloud.io/api/v3/institutional-holder/#{self.symbol}?apikey=#{Rails.application.credentials.fmpcloudApiKey}"
+    begin
+      puts "*** Starting API CALL: #{url}"
+      response = HTTParty.get(url, { timeout: 5 })
+      puts "*** Finished"
+    rescue
+      puts "*** ERROR: failed api call: #{url}"
+      return false
+    end
+    # puts response.body, response.code, response.message, response.headers.inspect
+    unless response.code == 200
+      self.errors.add(:base, "*** Unsuccessful API call. Response code: #{response.code}")
+      return false
+    end
+    body = JSON.parse(response.body)
+
+    unless body
+      self.errors.add(:base, "Unable to pull institutional-holder. No body.")
+      return false
+    end
+    puts ("INSTITUTIONAL SHARES")
+    # add up acquisition and dispositions
+    institutional_shares = 0
+    body.each do |t|
+      institutional_shares += t['shares'].to_i
+    end
+    puts("*** INSTITUTIONAL SHARES for #{self.symbol}")
+    puts("shares: #{institutional_shares}")
+    self.institutional_shares = institutional_shares
+    self.save
+    self.institutional_shares
   end
   
   private

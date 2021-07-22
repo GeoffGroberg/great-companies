@@ -93,6 +93,9 @@ class CompaniesController < ApplicationController
       when "insider trading"
         @companies = Company.where('insider_trading > 0 and intrinsic_value > price').order('insider_trading DESC').limit(200)
         
+      when "early bird"
+        @companies = Company.where('revenue_avg_growth3 > 10 and revenue_avg_growth5 is NULL and price > 0').limit(200)
+        
 
 
       end

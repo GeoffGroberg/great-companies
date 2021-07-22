@@ -31,9 +31,9 @@ class Account < ApplicationRecord
       self.market_value = 0.0
       self.companies.each do |company|
         company.account_process(self)
-        self.gain_amount += company.gain_amount
-        self.cost += company.cost
-        self.market_value += company.market_value
+        self.gain_amount += company.account_gain_amount
+        self.cost += company.account_cost
+        self.market_value += company.account_market_value
       end
       self.gain_percent = self.gain_amount / self.cost * 100
     end

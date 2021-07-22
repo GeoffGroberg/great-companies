@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_07_17_220146) do
+ActiveRecord::Schema.define(version: 2021_07_22_211039) do
 
   create_table "accounts", force: :cascade do |t|
     t.string "name"
@@ -70,6 +70,8 @@ ActiveRecord::Schema.define(version: 2021_07_17_220146) do
     t.string "website"
     t.decimal "dividend_yield_avg"
     t.decimal "insider_trading"
+    t.integer "shares_outstanding"
+    t.integer "institutional_shares"
   end
 
   create_table "company_lists", force: :cascade do |t|
