@@ -1,4 +1,5 @@
 <div <% if @list %>data-id="<%= list.id %>" data-company_id="<%= company.id %>"<% end %> class="big5">
+	<span class='company_name'><%= company.name %></span>
 	<span class="square symbol"><%= link_to company.symbol, company %></span>
 	<%
 	debt = number_with_precision(company.debt_ratio, precision: 1)

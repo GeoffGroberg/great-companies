@@ -101,6 +101,17 @@ $t-10: $red;
 .big5 {
 	display: flex;
 	font-size: .8rem;
+	position: relative;
+}
+.big5 span.company_name {
+	position: absolute;
+	left: 0;
+	font-size: .6rem;
+	line-height: 1;
+	background: hsla(0, 0, 100, .5);
+	color: hsla(0,0,0,.5);
+/*	width: 100%;*/
+/*	text-align: left;*/
 }
 .big5.header span {
 	color: #aaa;
