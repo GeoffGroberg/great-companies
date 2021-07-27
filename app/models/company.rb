@@ -48,6 +48,7 @@ class Company < ApplicationRecord
   
   def pull(force: false)
     self.pullQuote
+    self.pullProfile
     financials_result = self.pullKeyMetrics(force: force)
     insider_trading_result = self.pullInsiderTrading()
     institutional_shares = self.pullInstitutionalShares()
@@ -238,38 +239,48 @@ class Company < ApplicationRecord
   end
   
   def pullProfile
+    # set default values to blank
+    self.name = ''
+    self.description = ''
+    self.dcf = ''
+    self.mktCap = ''
+    self.volAvg = ''
+    self.industry = ''
+    self.sector = ''
+    self.exchangeShortName = ''
+    self.country = ''
+    self.ipoDate = ''
+    self.is_actively_trading = ''
+    self.is_etf = ''
+    self.website = ''
+    # attempt api call
     body = Company::apiCall(request: 'profile', symbols: self.symbol)
-    unless body
-      self.errors.add(:base, "Unable to pull company profile. No body.")
-      return false
-    end
-    c = body.first
-    if c.nil?
-      self.errors.add(:base, "Unable to pull company profile. No data.")
-      return false
-    end
-    # convert nil values to ''
-    c.each do |k,v|
-      if v.nil?
-        c[k] = ''
+    if body and body.first
+      c = body.first
+      # convert nil values to ''
+      c.each do |k,v|
+        if v.nil?
+          c[k] = ''
+        end
       end
+      self.symbol = c['symbol']
+      self.name = c['companyName']
+      self.description = c['description']
+      self.dcf = c['dcf']
+      self.mktCap = c['mktCap']
+      self.volAvg = c['volAvg']
+      self.industry = c['industry']
+      self.sector = c['sector']
+      self.exchangeShortName = c['exchangeShortName']
+      self.country = c['country']
+      self.ipoDate = c['ipoDate']
+      self.is_actively_trading = c['isActivelyTrading']
+      self.is_etf = c['isEtf']
+      self.website = c['website']
+    else
+      self.errors.add(:base, "Unable to pull company profile.")
     end
-    self.symbol = c['symbol']
-    self.name = c['companyName']
-    self.description = c['description']
-    self.dcf = c['dcf']
-    self.mktCap = c['mktCap']
-    self.volAvg = c['volAvg']
-    self.industry = c['industry']
-    self.sector = c['sector']
-    self.exchangeShortName = c['exchangeShortName']
-    self.country = c['country']
-    self.ipoDate = c['ipoDate']
-    self.is_actively_trading = c['isActivelyTrading']
-    self.is_etf = c['isEtf']
-    self.website = c['website']
     self.save
-    return true
   end
   
   def pullQuote
@@ -303,12 +314,13 @@ class Company < ApplicationRecord
   end
 
   def self.pullQuoteBatch(symbols)
+     # make the API call
     body = Company::apiCall(request: 'quote', symbols: symbols)
     unless body.present?
       puts "ERROR: Unable to pull company quote(s). No body."
       return false
     end
-    # make the API call and update companies
+    # update companies
     body.each do |quote|
       company = Company.find_by(symbol: quote['symbol'])
       company.price = quote['price'].to_f

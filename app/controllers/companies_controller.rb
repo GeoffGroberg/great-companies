@@ -16,11 +16,11 @@ class CompaniesController < ApplicationController
         # @companies = Company.where("roic_avg10 > 10 and equity_avg_growth10 > 10 and free_cash_flow_avg_growth10 > 10 and eps_avg_growth10 > 10 and revenue_avg_growth10 > 10 and price <= intrinsic_value").sort_by {|c| c.price / c.intrinsic_value}
         # @companies = Company.where("roic_avg10 > 10 and equity_avg_growth10 > 10 and free_cash_flow_avg_growth10 > 10 and eps_avg_growth10 > 10 and revenue_avg_growth10 > 10 and price <= intrinsic_value").order("sector, industry")
         # @companies = Company.where("roic_avg10 > 0 and equity_avg_growth10 > 0 and free_cash_flow_avg_growth10 > 0 and eps_avg_growth10 > 0 and revenue_avg_growth10 > 0 and roic_avg5 > 0 and equity_avg_growth5 > 0 and free_cash_flow_avg_growth5 > 0 and eps_avg_growth5 > 0 and revenue_avg_growth5 > 0 and roic_avg3 > 0 and equity_avg_growth3 > 0 and free_cash_flow_avg_growth3 > 0 and eps_avg_growth3 > 0 and revenue_avg_growth3 > 0 and price <= intrinsic_value and country != 'CN'").order("sector, industry")
-        @companies = Company.where("roic_avg10 > 5 and equity_avg_growth10 > 5 and free_cash_flow_avg_growth10 > 5 and eps_avg_growth10 > 5 and revenue_avg_growth10 > 5 and roic_avg5 > 5 and equity_avg_growth5 > 5 and free_cash_flow_avg_growth5 > 5 and eps_avg_growth5 > 5 and revenue_avg_growth5 > 5 and roic_avg3 > 5 and equity_avg_growth3 > 5 and free_cash_flow_avg_growth3 > 5 and eps_avg_growth3 > 5 and revenue_avg_growth3 > 5 and price <= intrinsic_value and price > 0").order("sector, industry")
+        @companies = Company.where("roic_avg10 > 5 and equity_avg_growth10 > 5 and free_cash_flow_avg_growth10 > 5 and eps_avg_growth10 > 5 and revenue_avg_growth10 > 5 and roic_avg5 > 5 and equity_avg_growth5 > 5 and free_cash_flow_avg_growth5 > 5 and eps_avg_growth5 > 5 and revenue_avg_growth5 > 5 and roic_avg3 > 5 and equity_avg_growth3 > 5 and free_cash_flow_avg_growth3 > 5 and eps_avg_growth3 > 5 and revenue_avg_growth3 > 5 and price <= intrinsic_value and is_actively_trading = true").order("sector, industry")
 
       when "Big 5 Small 500"
         # @companies = Company.where("roic_avg3 > 10 and free_cash_flow_avg_growth3 > 10 and debt_ratio < 5 and price <= intrinsic_value").order("mktCap ASC").limit(500)
-        @companies = Company.where("mktCap < 5000000000 and mktCap > 0 and country = 'US' and roic_avg3 > 10 and revenue_avg_growth3 > 0 and debt_ratio < 15 and price > 0").order("mktCap ASC").limit(500)
+        @companies = Company.where("mktCap < 5000000000 and mktCap > 0 and country = 'US' and roic_avg3 > 10 and revenue_avg_growth3 > 0 and debt_ratio < 15 and is_actively_trading = true").order("mktCap ASC").limit(500)
 
 
       when "Big 5, 5 Year, Discounted"
@@ -30,8 +30,8 @@ class CompaniesController < ApplicationController
         @companies = Company.where("roic_avg3 > 0 and equity_avg_growth3 > 0 and free_cash_flow_avg_growth3 > 0 and eps_avg_growth3 > 0 and revenue_avg_growth3 > 0 and price <= intrinsic_value and eps_growth_rate < 20").order("sector, industry")
 
       when "Intrinsic Value Discounted"
-        # @companies = Company.where('price > 0 and price < intrinsic_value').sort_by {|c| c.price / c.intrinsic_value}
-        @companies = Company.where('price > 0 and price < intrinsic_value').order("sector, industry")
+        # @companies = Company.where('is_actively_trading = true and price < intrinsic_value').sort_by {|c| c.price / c.intrinsic_value}
+        @companies = Company.where('is_actively_trading = true and price < intrinsic_value').order("sector, industry")
 
       when "Magic Sort"
         num_companies = 3000
@@ -81,7 +81,7 @@ class CompaniesController < ApplicationController
         @companies = Company.where('roic_avg3 > 14 and roic_avg5 > 14 and roic_avg10 > 14 and equity_avg_growth3 > 14 and free_cash_flow_avg_growth3 > 14 and eps_avg_growth3 > 14 and revenue_avg_growth3 > 14 and intrinsic_value > price')
 
       when "dcf"
-        @companies = Company.where('dcf > price and price > 0 and country = "US" and debt_ratio > 0 and debt_ratio < 5 and eps_growth_rate > pe and roic_avg3 > 10 and revenue_avg_growth3 > 0').sort_by {|c| 1 / ((c.dcf - c.price) / c.dcf)}
+        @companies = Company.where('dcf > price and is_actively_trading = true and country = "US" and debt_ratio > 0 and debt_ratio < 5 and eps_growth_rate > pe and roic_avg3 > 10 and revenue_avg_growth3 > 0').sort_by {|c| 1 / ((c.dcf - c.price) / c.dcf)}
         
       when "large us"
         # @companies = Company.where('country = "US" and dcf > price and intrinsic_value > price').order('mktCap DESC').limit(500)
@@ -94,16 +94,19 @@ class CompaniesController < ApplicationController
         @companies = Company.where('insider_trading > 0 and intrinsic_value > price').order('insider_trading DESC').limit(200)
         
       when "early bird"
-        @companies = Company.where('revenue_avg_growth3 not NULL and price > 0 and is_etf = false and eps_growth_rate > pe and ipoDate > "2016-01-01" and country = "US" and debt_ratio >= 0 and debt_ratio < 4').limit(200)
+        @companies = Company.where('is_actively_trading = true').order('ipoDate DESC').limit(200)
         
       when "early bird, high IH"
-        @companies = Company.where('revenue_avg_growth3 not NULL and price > 0 and is_etf = false and eps_growth_rate > pe and ipoDate > "2016-01-01" and country = "US" and debt_ratio >= 0 and debt_ratio < 4').limit(200).sort_by {|c| -c.institutional_shares_percent}
+        @companies = Company.where('is_actively_trading = true').order('ipoDate DESC').limit(200).sort_by {|c| -c.institutional_shares_percent}
+        # @companies = Company.where('revenue_avg_growth3 not NULL and is_actively_trading = true and is_etf = false and eps_growth_rate > pe and ipoDate > "2016-01-01" and country = "US" and debt_ratio >= 0 and debt_ratio < 4').limit(200).sort_by {|c| -c.institutional_shares_percent}
         
-      when "low IH"
-        @companies = Company.where('price > 0 and shares_outstanding > 0 and intrinsic_value > price and revenue_avg_growth3 > 0 and revenue_avg_growth5 > 0 and roic_avg3 > 10 and roic_avg5 > 10 and equity_avg_growth3 > 0 and equity_avg_growth5 > 0 and free_cash_flow_avg_growth3 > 0 and free_cash_flow_avg_growth5 > 0 and eps_avg_growth3 > 0 and eps_avg_growth5 > 0 and country = "US"').sort_by {|c| c.institutional_shares_percent}
+      when "bargains"
+        # @companies = Company.where('is_actively_trading = true and debt_ratio < 4 and intrinsic_value > price and revenue_avg_growth3 > 0 and roic_avg3 > 0 and equity_avg_growth3 > 0 and free_cash_flow_avg_growth3 > 0 and eps_avg_growth3 > 0 and country = "US"').sort_by {|c| c.institutional_shares_percent}
+        @companies = Company.where('is_actively_trading = true and debt_ratio < 4 and debt_ratio >= 0 and intrinsic_value > price and pe <= eps_growth_rate and pe < 15 and country="US"').sort_by {|c| c.institutional_shares_percent}
+        # limit instituional holdings to under 50%? 20%?
 
       when "CA"
-        @companies = Company.where('price > 0 and shares_outstanding > 0 and country = "CA"').limit(200)
+        @companies = Company.where('is_actively_trading = true and shares_outstanding > 0 and country = "CA"').limit(200)
         
 
 
