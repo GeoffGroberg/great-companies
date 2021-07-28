@@ -62,6 +62,7 @@
 		<span><%= number_with_precision(company.account_gain_percent, precision: 1) %>%</span>
 		<span class="small light"><%= number_to_currency(company.account_gain_amount, precision: 0) %></span>
 		<span class="small light"><%= number_to_currency(company.account_market_value, precision: 0) %></span>
+		<span class="small light"><%= company.account_shares %></span>
 		<% end %>
 	</span>
 	<span class="sectorAndIndustry">

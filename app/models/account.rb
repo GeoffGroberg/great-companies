@@ -13,30 +13,23 @@ class Account < ApplicationRecord
 
     self.active_companies = []
     self.inactive_companies = []
-    self.companies.each do |c|
-      shares = 0
-      c.transactions.each do |t|
-        shares += t.number_of_shares
+    self.gain_amount = 0.0
+    self.cost = 0.0
+    self.market_value = 0.0
+
+    self.companies.each do |company|
+      company.account_process(self)
+      if company.account_shares > 0
+        self.active_companies << company
+      else
+        self.inactive_companies << company
       end
-      unless active_companies.include? c
-        if shares > 0
-          active_companies << c
-        elsif shares == 0
-          inactive_companies << c
-        end
-      end
-      
-      self.gain_amount = 0.0
-      self.cost = 0.0
-      self.market_value = 0.0
-      self.companies.each do |company|
-        company.account_process(self)
-        self.gain_amount += company.account_gain_amount
-        self.cost += company.account_cost
-        self.market_value += company.account_market_value
-      end
-      self.gain_percent = self.gain_amount / self.cost * 100
+      self.gain_amount += company.account_gain_amount
+      self.cost += company.account_cost
+      self.market_value += company.account_market_value
     end
+    self.gain_percent = self.gain_amount / self.cost * 100
+
   end
   
 end
