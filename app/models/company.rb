@@ -82,7 +82,7 @@ class Company < ApplicationRecord
     end
 
     # yearly averages
-    self.dividend_yield_avg = avg('dividend_yield', 5, drop_hi = true)
+    self.dividend_yield_avg = avg('dividend_yield', [key_metrics.size, 5].min)
     self.roic_avg10 = avg('roic', 10, drop_hi = true, drop_low = true)
     self.roic_avg5 = avg('roic', 5)
     self.roic_avg3 = avg('roic', 3)

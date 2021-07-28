@@ -81,7 +81,7 @@ class CompaniesController < ApplicationController
         @companies = Company.where('roic_avg3 > 14 and roic_avg5 > 14 and roic_avg10 > 14 and equity_avg_growth3 > 14 and free_cash_flow_avg_growth3 > 14 and eps_avg_growth3 > 14 and revenue_avg_growth3 > 14 and intrinsic_value > price')
 
       when "dcf"
-        @companies = Company.where('dcf > price and is_actively_trading = true and country = "US" and debt_ratio > 0 and debt_ratio < 5 and eps_growth_rate > pe and roic_avg3 > 10 and revenue_avg_growth3 > 0').sort_by {|c| 1 / ((c.dcf - c.price) / c.dcf)}
+        @companies = Company.where('price > 0 and dcf > price and is_actively_trading = true and country = "US" and debt_ratio > 0 and debt_ratio < 5 and eps_growth_rate > pe and roic_avg3 > 0 and revenue_avg_growth3 > 0').sort_by {|c| 1 / ((c.dcf - c.price) / c.dcf)}
         
       when "large us"
         # @companies = Company.where('country = "US" and dcf > price and intrinsic_value > price').order('mktCap DESC').limit(500)
@@ -102,7 +102,7 @@ class CompaniesController < ApplicationController
         
       when "bargains"
         # @companies = Company.where('is_actively_trading = true and debt_ratio < 4 and intrinsic_value > price and revenue_avg_growth3 > 0 and roic_avg3 > 0 and equity_avg_growth3 > 0 and free_cash_flow_avg_growth3 > 0 and eps_avg_growth3 > 0 and country = "US"').sort_by {|c| c.institutional_shares_percent}
-        @companies = Company.where('is_actively_trading = true and debt_ratio < 4 and debt_ratio >= 0 and intrinsic_value > price and pe <= eps_growth_rate and pe < 15 and country="US"').sort_by {|c| c.institutional_shares_percent}
+        @companies = Company.where('price > 0 and is_actively_trading = true and debt_ratio < 4 and debt_ratio >= 0 and (intrinsic_value > price or dcf > price) and pe > 0 and pe <= eps_growth_rate and country="US" and sector != ""').sort_by {|c| c.institutional_shares_percent}
         # limit instituional holdings to under 50%? 20%?
 
       when "CA"

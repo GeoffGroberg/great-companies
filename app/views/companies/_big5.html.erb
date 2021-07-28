@@ -24,14 +24,34 @@
 	roic5 = number_with_precision(company.roic_avg5, precision: 1)
 	roic10 = number_with_precision(company.roic_avg10, precision: 1)
 	%>
+	<span class="square <%= big5_temperature(roic3.to_f) %>">
+		<span class="<%= big5_temperature(roic3.to_f) %>"><%= roic3 %></span>
+		<span class="<%= big5_temperature(roic5.to_f) %>"><%= roic5 %></span>
+		<span class="<%= big5_temperature(roic10.to_f) %>"><%= roic10 %></span>
+	</span>
+	<span class="square <%= big5_temperature(revenue3.to_f) %>">
+		<span class="<%= big5_temperature(revenue3.to_f) %>"><%= revenue3 %></span>
+		<span class="<%= big5_temperature(revenue5.to_f) %>"><%= revenue5 %></span>
+		<span class="<%= big5_temperature(revenue10.to_f) %>"><%= revenue10 %></span>
+	</span>
+	<span class="square <%= big5_temperature(eps3.to_f) %>">
+		<span class="<%= big5_temperature(eps3.to_f) %>"><%= eps3 %></span>
+		<span class="<%= big5_temperature(eps5.to_f) %>"><%= eps5 %></span>
+		<span class="<%= big5_temperature(eps10.to_f) %>"><%= eps10 %></span>
+	</span>
+	<span class="square <%= big5_temperature(fcf3.to_f) %>">
+		<span class="<%= big5_temperature(fcf3.to_f) %>"><%= fcf3 %></span>
+		<span class="<%= big5_temperature(fcf5.to_f) %>"><%= fcf5 %></span>
+		<span class="<%= big5_temperature(fcf10.to_f) %>"><%= fcf10 %></span>
+	</span>
+	<span class="square <%= big5_temperature(equity3.to_f) %>">
+		<span class="<%= big5_temperature(equity3.to_f) %>"><%= equity3 %></span>
+		<span class="<%= big5_temperature(equity5.to_f) %>"><%= equity5 %></span>
+		<span class="<%= big5_temperature(equity10.to_f) %>"><%= equity10 %></span>
+	</span>
 	<span class="square <%= debt_temperature(debt.to_f) %>"><%= debt %></span>
-	<span class="square <%= big5_temperature(revenue3.to_f) %>"><%= revenue3 %><br><%= revenue5 %><br><%= revenue10 %></span>
-	<span class="square <%= big5_temperature(eps3.to_f) %>"><%= eps3 %><br><%= eps5 %><br><%= eps10 %></span>
-	<span class="square <%= big5_temperature(fcf3.to_f) %>"><%= fcf3 %><br><%= fcf5 %><br><%= fcf10 %></span>
-	<span class="square <%= big5_temperature(equity3.to_f) %>"><%= equity3 %><br><%= equity5 %><br><%= equity10 %></span>
-	<span class="square <%= big5_temperature(roic3.to_f) %>"><%= roic3 %><br><%= roic5 %><br><%= roic10 %></span>
 
-	<span class="square great_company <%= company.great %>"><%= link_to 'G', company %></span>
+	<!-- <span class="square great_company <%= company.great %>"><%= link_to 'G', company %></span> -->
 	<span class="square discount">
 		<span><%= number_with_precision(company.discount, precision: 1) %>%</span>
 		<br>

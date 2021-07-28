@@ -93,37 +93,37 @@
 		<thead>
 			<tr>
 				<th scope="col"></th>
+				<th scope="col">ROIC</th>
 				<th scope="col">Revenue</th>
 				<th scope="col">EPS</th>
 				<th scope="col">FCF</th>
 				<th scope="col">Equity</th>
-				<th scope="col">ROIC</th>
 			</tr>
 		</thead>
 		<tbody>
 			<tr>
 				<td>3 yr</td>
+				<td><%= number_to_percentage(@company.roic_avg3, precision: 1) %></td>
 				<td><%= number_to_percentage(@company.revenue_avg_growth3, precision: 1) %></td>
 				<td><%= number_to_percentage(@company.eps_avg_growth3, precision: 1) %></td>
 				<td><%= number_to_percentage(@company.free_cash_flow_avg_growth3, precision: 1) %></td>
 				<td><%= number_to_percentage(@company.equity_avg_growth3, precision: 1) %></td>
-				<td><%= number_to_percentage(@company.roic_avg3, precision: 1) %></td>
 			</tr>
 			<tr>
 				<td>5 yr</td>
+				<td><%= number_to_percentage(@company.roic_avg5, precision: 1) %></td>
 				<td><%= number_to_percentage(@company.revenue_avg_growth5, precision: 1) %></td>
 				<td><%= number_to_percentage(@company.eps_avg_growth5, precision: 1) %></td>
 				<td><%= number_to_percentage(@company.free_cash_flow_avg_growth5, precision: 1) %></td>
 				<td><%= number_to_percentage(@company.equity_avg_growth5, precision: 1) %></td>
-				<td><%= number_to_percentage(@company.roic_avg5, precision: 1) %></td>
 			</tr>
 			<tr>
 				<td>10 yr</td>
+				<td><%= number_to_percentage(@company.roic_avg10, precision: 1) %></td>
 				<td><%= number_to_percentage(@company.revenue_avg_growth10, precision: 1) %></td>
 				<td><%= number_to_percentage(@company.eps_avg_growth10, precision: 1) %></td>
 				<td><%= number_to_percentage(@company.free_cash_flow_avg_growth10, precision: 1) %></td>
 				<td><%= number_to_percentage(@company.equity_avg_growth10, precision: 1) %></td>
-				<td><%= number_to_percentage(@company.roic_avg10, precision: 1) %></td>
 			</tr>
 		</tbody>
 	</table>
@@ -140,11 +140,11 @@
 				<th scope="col">Equity</th>
 				<th scope="col">Yield</th>
 
+				<th scope="col">ROIC</th>
 				<th scope="col">Revenue Growth</th>
 				<th scope="col">EPS Growth</th>
 				<th scope="col">FCF Growth</th>
 				<th scope="col">Equity Growth</th>
-				<th scope="col">ROIC</th>
 			</tr>
 		</thead>
 		<tbody>
@@ -160,6 +160,7 @@
 				<td><%= number_with_precision(v.equity, precision: 1) %></td>
 				<td><%= number_to_percentage(v.dividend_yield, precision: 1) %></td>
 
+				<td class="key"><%= number_to_percentage(v.roic, precision: 1) %></td>
 			<% if @company.key_metrics.size > k + 1 %>
 				<td class="key"><%= number_to_percentage(v.revenue_growth, precision: 1) %></td>
 				<td class="key"><%= number_to_percentage(v.eps_growth, precision: 1) %></td>
@@ -171,7 +172,6 @@
 				<td></td>
 				<td></td>
 			<% end %>
-				<td class="key"><%= number_to_percentage(v.roic, precision: 1) %></td>
 			</tr>
 			<% end %>
 		<% end %>
