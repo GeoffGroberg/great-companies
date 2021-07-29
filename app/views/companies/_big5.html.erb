@@ -54,8 +54,10 @@
 	<!-- <span class="square great_company <%= company.great %>"><%= link_to 'G', company %></span> -->
 	<span class="square discount">
 		<span><%= number_with_precision(company.discount, precision: 1) %>%</span>
-		<br>
 		<span class='light'><%= number_with_precision(company.dcf_discount, precision: 1) %>%</span>
+		<% unless company.shareholders_equity_per_share.nil? %>
+		<span class='light'><%= number_with_precision(company.shareholders_equity_per_share / company.price * 100, precision: 1) %>%</span>
+		<% end %>
 	</span>
 	<span class="square gain">
 		<% if company.account_gain_percent %>

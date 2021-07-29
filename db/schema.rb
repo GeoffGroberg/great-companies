@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_07_22_211039) do
+ActiveRecord::Schema.define(version: 2021_07_29_002643) do
 
   create_table "accounts", force: :cascade do |t|
     t.string "name"
@@ -72,6 +72,7 @@ ActiveRecord::Schema.define(version: 2021_07_22_211039) do
     t.decimal "insider_trading"
     t.integer "shares_outstanding"
     t.integer "institutional_shares"
+    t.decimal "shareholders_equity_per_share"
   end
 
   create_table "company_lists", force: :cascade do |t|
@@ -103,6 +104,9 @@ ActiveRecord::Schema.define(version: 2021_07_22_211039) do
     t.decimal "graham_number"
     t.decimal "pe_ratio"
     t.decimal "dividend_yield"
+    t.decimal "receivables_growth"
+    t.decimal "inventory_growth"
+    t.decimal "asset_growth"
     t.index "\"company\", \"date\"", name: "index_annual_key_financials_on_company_and_date"
     t.index ["company_id"], name: "index_key_metrics_on_company_id"
   end

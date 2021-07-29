@@ -68,6 +68,11 @@
 	</p>
 
 	<p>
+	  <strong>Equity per Share:</strong>
+	  $<%= number_with_precision(@company.shareholders_equity_per_share, precision: 2) %>
+	</p>
+
+	<p>
 	  <strong>Dividend Yield Avg:</strong> <%= number_to_percentage(@company.dividend_yield_avg, precision: 1) %>
 	</p>
 

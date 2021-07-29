@@ -46,10 +46,10 @@ class Company < ApplicationRecord
     self.account_market_value = self.account_shares * self.price
   end
   
-  def pull(force: false)
+  def pull
     self.pullQuote
     self.pullProfile
-    financials_result = self.pullKeyMetrics(force: force)
+    financials_result = self.pullKeyMetrics
     insider_trading_result = self.pullInsiderTrading()
     institutional_shares = self.pullInstitutionalShares()
     calculate_result = self.calculate # calculate growth rates from key metrics
@@ -62,24 +62,8 @@ class Company < ApplicationRecord
   end
   
   def calculate
-    # run calculations on key metrics
-    # yearly growth
+    # get key metrics
     key_metrics = self.key_metrics.where(quarterly: false).order("date DESC")
-    key_metrics.each_with_index do |v, k|
-      if key_metrics.size > k + 1
-        prev = key_metrics[k + 1]
-
-        key_metrics[k].equity_growth = percent_change(v.equity, prev.equity)
-
-        key_metrics[k].eps_growth = percent_change(v.eps, prev.eps)
-        
-        key_metrics[k].revenue_growth = percent_change(v.revenue, prev.revenue)
-        
-        key_metrics[k].free_cash_flow_growth = percent_change(v.free_cash_flow, prev.free_cash_flow)
-
-        key_metrics[k].save
-      end
-    end
 
     # yearly averages
     self.dividend_yield_avg = avg('dividend_yield', [key_metrics.size, 5].min)
@@ -278,6 +262,7 @@ class Company < ApplicationRecord
       self.is_etf = c['isEtf']
       self.website = c['website']
     else
+      puts "*** Unable to pull profile."
       self.errors.add(:base, "Unable to pull company profile.")
     end
     self.save
@@ -335,42 +320,24 @@ class Company < ApplicationRecord
     return true
   end
     
-  def pullKeyMetrics(limit: 20, force: false)
-    # is it time to pull anew?
-    pull = true
-    # if we already pulled after the earnings_announcment time, then no need to pull again
-    if self.financials_pulled_at.present? and self.earnings_announcement.present? and self.financials_pulled_at >= self.earnings_announcement
-      pull = false
-    end
-    # if there's a future earnings announcement, and the last time we pulled was less than 3 months from that time, then no need to pull again
-    if self.earnings_announcement.present? and DateTime.now < self.earnings_announcement and self.financials_pulled_at.present? and self.financials_pulled_at >= self.earnings_announcement.prev_month(3)
-      pull = false
-    end
-    if force
-      pull = true
-    end
-    unless pull
-      return true # no need to pull financials right now
-    end
-
-    # update the company profile
-    profile_result = self.pullProfile
-    unless profile_result
-      puts "*** Unable to pull profile."
-      return false
-    end
-    
+  def pullKeyMetrics(limit: 20)
     # get annual key metrics
     key_metrics = Company::apiCall(request: 'key-metrics', symbols: self.symbol, limit: limit)
     unless key_metrics and key_metrics.first
       puts "*** Unable to pull annual key metrics."
       return false
     end
-    # create a new KeyMetric for each year
+    # get annual growth
+    growth = Company::apiCall(request: 'financial-growth', symbols: self.symbol, limit: limit)
+    unless growth and growth.first
+      puts "*** Unable to pull annual growth."
+      return false
+    end
+    # create a new KeyMetric for each year and merge in growth figures
     x = 0
     while x < limit
       x += 1
-      if key_metrics[x-1] and key_metrics[x-1]['date']
+      if key_metrics[x-1] and key_metrics[x-1]['date'] and growth[x-1] and growth[x-1]['date']
         statement_date = key_metrics[x-1]['date']
         key_metric = KeyMetric.find_or_create_by(date: statement_date, company_id: self.id, quarterly: false)
         key_metric.roic = key_metrics[x-1]['roic'].to_f * 100
@@ -383,6 +350,14 @@ class Company < ApplicationRecord
         key_metric.graham_number = key_metrics[x-1]['grahamNumber'].to_f
         key_metric.pe_ratio = key_metrics[x-1]['peRatio'].to_f
         key_metric.dividend_yield = key_metrics[x-1]['dividendYield'].to_f * 100
+        # growth
+        key_metric.revenue_growth = growth[x-1]['revenueGrowth'].to_f * 100
+        key_metric.eps_growth = growth[x-1]['epsgrowth'].to_f * 100
+        key_metric.free_cash_flow_growth = growth[x-1]['freeCashFlowGrowth'].to_f * 100
+        key_metric.equity_growth = growth[x-1]['bookValueperShareGrowth'].to_f * 100
+        key_metric.receivables_growth = growth[x-1]['receivablesGrowth'].to_f * 100
+        key_metric.inventory_growth = growth[x-1]['inventoryGrowth'].to_f * 100
+        key_metric.asset_growth = growth[x-1]['assetGrowth'].to_f * 100
         key_metric.save
       end
     end
@@ -392,7 +367,7 @@ class Company < ApplicationRecord
       puts "*** Unable to pull quarterly key metrics."
       return false
     end
-    # delete the existing quarterlies
+    # delete the existing quarterlies then create new ones
     KeyMetric.where(company_id: self.id, quarterly: true).destroy_all
     key_metrics_q.each do |key_metric_q|
       key_metric = KeyMetric.find_or_create_by(company_id: self.id, quarterly: true, date: key_metric_q['date'])
@@ -407,6 +382,9 @@ class Company < ApplicationRecord
       key_metric.pe_ratio = key_metric_q['peRatio'].to_f
       key_metric.save
     end
+    
+    # add shareholders_equity_per_share to company
+    self.shareholders_equity_per_share = key_metrics_q.first['shareholdersEquityPerShare'].to_f
 
     self.financials_pulled_at = DateTime.now
     return true
