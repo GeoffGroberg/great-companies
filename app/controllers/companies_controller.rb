@@ -103,7 +103,8 @@ class CompaniesController < ApplicationController
       when "bargains"
         # @companies = Company.where('is_actively_trading = true and debt_ratio < 4 and intrinsic_value > price and revenue_avg_growth3 > 0 and roic_avg3 > 0 and equity_avg_growth3 > 0 and free_cash_flow_avg_growth3 > 0 and eps_avg_growth3 > 0 and country = "US"').sort_by {|c| c.institutional_shares_percent}
         # @companies = Company.where('price > 0 and is_actively_trading = true and debt_ratio < 4 and debt_ratio >= 0 and (intrinsic_value > price or dcf > price) and pe > 0 and pe <= eps_growth_rate and country="US" and sector != ""').sort_by {|c| c.institutional_shares_percent}
-        @companies = Company.where('price > 0 and is_actively_trading = true and debt_ratio < 4 and debt_ratio >= 0 and (intrinsic_value > price or dcf > price) and pe > 0 and pe <= eps_growth_rate and country="US" and sector != ""').sort_by {|c| c.price / c.shareholders_equity_per_share}
+        # @companies = Company.where('price > 0 and is_actively_trading = true and debt_ratio < 4 and debt_ratio >= 0 and (intrinsic_value > price or dcf > price) and pe > 0 and pe <= eps_growth_rate and country="US" and sector != ""').sort_by {|c| c.price / c.shareholders_equity_per_share}
+        @companies = Company.where('price > 0 and is_actively_trading = true and debt_ratio < 4 and debt_ratio >= 0 and (shareholders_equity_per_share > price and intrinsic_value > price and dcf > price) and pe > 0 and country="US"').sort_by {|c| c.price / c.shareholders_equity_per_share}
         # limit instituional holdings to under 50%? 20%?
 
       when "CA"

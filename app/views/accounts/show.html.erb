@@ -2,8 +2,19 @@
 
 <% @companies = @account.active_companies.sort_by {|c| -c.account_market_value} %>
 
+<%
+# calculate the average percent gain for active companies
+avg_gain = 0
+@companies.each do |c|
+	avg_gain += c.account_gain_percent
+end
+avg_gain = avg_gain / @companies.count()
+%>
+
 <%= render 'companies/big5_list', companies: @companies, account: @account %>
 
+<br>
+<strong>avg gain:</strong> <%= number_with_precision(avg_gain, precision: 1) %>%
 <br>
 <strong>capital gain:</strong> <%= number_with_precision(@account.gain_percent, precision: 1) %>% <%= number_to_currency(@account.gain_amount) %>
 

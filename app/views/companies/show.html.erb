@@ -70,6 +70,9 @@
 	<p>
 	  <strong>Equity per Share:</strong>
 	  $<%= number_with_precision(@company.shareholders_equity_per_share, precision: 2) %>
+	  <% if @company.price > 0 and @company.shareholders_equity_per_share.is_a? Numeric %>
+	  (<%= number_with_precision(@company.shareholders_equity_per_share / @company.price * 100, precision: 1) %>%)
+	  <% end %>
 	</p>
 
 	<p>
