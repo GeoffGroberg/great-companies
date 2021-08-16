@@ -2,6 +2,12 @@ class Account < ApplicationRecord
   has_many :transactions
   attr_accessor :companies, :active_companies, :inactive_companies, :gain_percent, :gain_amount, :market_value, :cost
   
+  # need to strip commas from the cash form input field otherwise 12,356.23 will end up as 12 in the database
+  def cash=(cash)
+     cash = cash.gsub(",", "")
+     self[:cash] = cash.to_f
+  end
+
   def calculate_companies
     # calculate info about the companies in this account
     self.companies = []
@@ -16,6 +22,10 @@ class Account < ApplicationRecord
     self.gain_amount = 0.0
     self.cost = 0.0
     self.market_value = 0.0
+    # add cash to market_value
+    if self.cash
+      self.market_value += self.cash
+    end
 
     self.companies.each do |company|
       company.account_process(self)

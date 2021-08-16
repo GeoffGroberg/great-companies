@@ -1,6 +1,6 @@
 <div id='companyInfo'>
 	
-	<h1><%= @company.symbol %> - <%= @company.name %> (<%= @company.exchangeShortName %>, <%= @company.country %>) <% if @company.website %><%= link_to "Website", @company.website %><% end %></h1>
+	<h1><%= @company.symbol %> - <%= @company.name %> (<%= @company.exchangeShortName %>, <%= @company.country %>) <% if @company.website %><%= link_to "Website", @company.website, target: :_blank %><% end %></h1>
 	<br>
 	
 	<div id='companySidebar'>

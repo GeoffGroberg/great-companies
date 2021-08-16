@@ -1,6 +1,12 @@
 <div <% if @list %>data-id="<%= list.id %>" data-company_id="<%= company.id %>"<% end %> class="big5">
-	<span class='company_name'><%= company.name %></span>
-	<span class="square symbol"><%= link_to company.symbol, company %></span>
+	<!-- <span class='company_name'><%= company.name %></span> -->
+	<span class="square symbol">
+		<%= link_to company.symbol, company %>
+		<% if account %>
+			<span class="small light"><%= number_with_precision(company.account_market_value / account.market_value * 100, precision: 1) %>%</span>
+			<!-- <span class="small light"><%= number_to_currency(company.account_market_value, precision: 0) %></span> -->
+		<% end %>
+	</span>
 	<%
 	debt = number_with_precision(company.debt_ratio, precision: 1)
 
@@ -63,8 +69,6 @@
 		<% if company.account_gain_percent %>
 		<span><%= number_with_precision(company.account_gain_percent, precision: 1) %>%</span>
 		<span class="small light"><%= number_to_currency(company.account_gain_amount, precision: 0) %></span>
-		<span class="small light"><%= number_to_currency(company.account_market_value, precision: 0) %></span>
-		<span class="small light"><%= company.account_shares %></span>
 		<% end %>
 	</span>
 	<span class="sectorAndIndustry">
