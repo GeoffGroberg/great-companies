@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_08_16_175650) do
+ActiveRecord::Schema.define(version: 2021_08_16_230655) do
 
   create_table "accounts", force: :cascade do |t|
     t.string "name"
@@ -74,6 +74,7 @@ ActiveRecord::Schema.define(version: 2021_08_16_175650) do
     t.integer "shares_outstanding"
     t.integer "institutional_shares"
     t.decimal "shareholders_equity_per_share"
+    t.decimal "fcf_ratio"
   end
 
   create_table "company_lists", force: :cascade do |t|

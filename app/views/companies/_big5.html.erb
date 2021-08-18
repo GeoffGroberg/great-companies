@@ -2,7 +2,7 @@
 	<!-- <span class='company_name'><%= company.name %></span> -->
 	<span class="square symbol">
 		<%= link_to company.symbol, company %>
-		<% if account %>
+		<% if defined?(account) and account %>
 			<span class="small light"><%= number_with_precision(company.account_market_value / account.market_value * 100, precision: 1) %>%</span>
 			<!-- <span class="small light"><%= number_to_currency(company.account_market_value, precision: 0) %></span> -->
 		<% end %>
@@ -60,10 +60,11 @@
 	<!-- <span class="square great_company <%= company.great %>"><%= link_to 'G', company %></span> -->
 	<span class="square discount">
 		<span><%= number_with_precision(company.discount, precision: 1) %>%</span>
-		<span class='light'><%= number_with_precision(company.dcf_discount, precision: 1) %>%</span>
+		<span class='small light'><%= number_with_precision(company.dcf_discount, precision: 1) %>%</span>
 		<% unless company.shareholders_equity_per_share.nil? %>
-		<span class='light'><%= number_with_precision(company.shareholders_equity_per_share / company.price * 100, precision: 1) %>%</span>
+			<span class='small light'><%= number_with_precision(company.shareholders_equity_per_share / company.price * 100, precision: 1) %>%</span>
 		<% end %>
+		<span class='small light'>PE <%= number_with_precision(company.pe, precision: 0) %></span>
 	</span>
 	<span class="square gain">
 		<% if company.account_gain_percent %>

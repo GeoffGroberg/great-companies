@@ -88,6 +88,11 @@ class Company < ApplicationRecord
       self.debt_ratio = key_metrics[0].debt_ratio
     end
 
+    # fcf_ratio = free cash flow per share divided by stock price
+    if key_metrics and key_metrics[0].free_cash_flow
+      self.fcf_ratio = key_metrics[0].free_cash_flow / self.price
+    end
+
     # graham number
     if key_metrics and key_metrics[1]
       self.graham_number = key_metrics[1].graham_number

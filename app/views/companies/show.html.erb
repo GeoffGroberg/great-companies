@@ -70,9 +70,13 @@
 	<p>
 	  <strong>Equity per Share:</strong>
 	  $<%= number_with_precision(@company.shareholders_equity_per_share, precision: 2) %>
-	  <% if @company.price > 0 and @company.shareholders_equity_per_share.is_a? Numeric %>
+	  <% if defined?(@company.price) and @company.shareholders_equity_per_share.is_a? Numeric %>
 	  (<%= number_with_precision(@company.shareholders_equity_per_share / @company.price * 100, precision: 1) %>%)
 	  <% end %>
+	</p>
+
+	<p>
+	  <strong>FCF Ratio:</strong> <%= number_to_percentage(@company.fcf_ratio * 100, precision: 1) %>
 	</p>
 
 	<p>
@@ -95,6 +99,8 @@
 	  <strong>Graham Number:</strong>
 	  <%= number_with_precision(@company.graham_number, precision: 2) %>
 	</p> -->
+
+	<%= render 'companies/big5', company: @company %>
 
 	<table class="metrics">
 		<caption>Averages (per share)</caption>
