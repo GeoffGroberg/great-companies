@@ -89,7 +89,7 @@ class Company < ApplicationRecord
     end
 
     # fcf_ratio = free cash flow per share divided by stock price
-    if key_metrics and key_metrics[0].free_cash_flow
+    if key_metrics and key_metrics[0] and key_metrics[0].free_cash_flow
       self.fcf_ratio = key_metrics[0].free_cash_flow / self.price
     end
 
@@ -473,6 +473,73 @@ class Company < ApplicationRecord
     self.institutional_shares
   end
   
+  def peers
+    url = "https://fmpcloud.io/api/v4/stock_peers?symbol=#{self.symbol}&apikey=#{Rails.application.credentials.fmpcloudApiKey}"
+    begin
+      puts "*** Starting API CALL: #{url}"
+      response = HTTParty.get(url, { timeout: 5 })
+      puts "*** Finished"
+    rescue
+      puts "*** ERROR: failed api call: #{url}"
+      return false
+    end
+    unless response.code == 200
+      self.errors.add(:base, "*** Unsuccessful API call. Response code: #{response.code}")
+      return false
+    end
+    body = JSON.parse(response.body)
+    unless body
+      self.errors.add(:base, "Unable to pull institutional-holder. No body.")
+      return false
+    end
+    @companies = [self]
+    body.each do |d|
+      d['peersList'].each do |symbol|
+        @companies << Company.find_or_create_by(symbol: symbol.upcase)
+      end
+    end
+    @companies
+  end
+  
+  def steadiness(varNames = [], periods = 10)
+    if varNames.length == 0
+      varNames = ['roic', 'revenue_growth']
+    end
+    # calculate steadiness of a key metric
+    key_metrics = self.key_metrics.where(quarterly: false).order("date DESC")
+    unless key_metrics.first
+      return Float::INFINITY
+    end
+    # make sure there is enough data to calculate over n periods
+    if key_metrics.size < periods
+      return Float::INFINITY
+    end
+    n = 0
+    steadiness = 0
+    varNames.each do |varName|
+      last_metric = nil
+      key_metrics.each do |metric|
+        n += 1
+        break if n > periods
+        # skip nil or infinite metrics
+        if metric[varName].nil? or metric[varName].infinite?
+          next
+        end
+        last_metric = key_metrics[n-2][varName]
+        if last_metric.nil?
+          last_metric = metric[varName]
+        end
+        # steadiness += metric[varName]
+        steadiness += (metric[varName] - last_metric).abs()
+        last_metric = metric[varName]
+      end
+    end
+    # puts("***")
+    # puts("#{self.name}: #{steadiness}")
+    # puts("***")
+    steadiness
+  end
+
   private
   
   def percent_change(new_num, old_num)

@@ -76,7 +76,10 @@
 	</p>
 
 	<p>
-	  <strong>FCF Ratio:</strong> <%= number_to_percentage(@company.fcf_ratio * 100, precision: 1) %>
+	  <strong>FCF Ratio:</strong>
+	  <% if @company.fcf_ratio %>
+		  <%= number_to_percentage(@company.fcf_ratio * 100, precision: 1) %>
+	  <% end %>
 	</p>
 
 	<p>
@@ -99,8 +102,6 @@
 	  <strong>Graham Number:</strong>
 	  <%= number_with_precision(@company.graham_number, precision: 2) %>
 	</p> -->
-
-	<%= render 'companies/big5', company: @company %>
 
 	<table class="metrics">
 		<caption>Averages (per share)</caption>
@@ -191,6 +192,12 @@
 		<% end %>
 		</tbody>
 	</table>
+
+
+	<h2>Peers</h2>
+	<% @companies = @company.peers() %>
+	<%= render 'companies/big5_list', companies: @companies %>
+
 </div>
 
 <!-- <%= link_to 'Edit', edit_company_path(@company) %> |
