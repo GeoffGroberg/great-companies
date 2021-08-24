@@ -89,7 +89,7 @@ class Company < ApplicationRecord
     end
 
     # fcf_ratio = free cash flow per share divided by stock price
-    if key_metrics and key_metrics[0] and key_metrics[0].free_cash_flow
+    if key_metrics and key_metrics[0] and key_metrics[0].free_cash_flow and !key_metrics[0].free_cash_flow.nil?
       self.fcf_ratio = key_metrics[0].free_cash_flow / self.price
     end
 

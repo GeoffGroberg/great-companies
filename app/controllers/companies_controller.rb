@@ -25,14 +25,14 @@ class CompaniesController < ApplicationController
 
 
       when "Big 5, 5 Year, Discounted"
-        @companies = Company.where("roic_avg5 > 0 and equity_avg_growth5 > 0 and free_cash_flow_avg_growth5 > 0 and eps_avg_growth5 > 0 and revenue_avg_growth5 > 0 and roic_avg3 > 0 and equity_avg_growth3 > 0 and free_cash_flow_avg_growth3 > 0 and eps_avg_growth3 > 0 and revenue_avg_growth3 > 0 and price <= intrinsic_value and price > 0").sort_by{|c| -c.discount}
+        @companies = Company.where("roic_avg5 > 0 and equity_avg_growth5 > 0 and free_cash_flow_avg_growth5 > 0 and eps_avg_growth5 > 0 and revenue_avg_growth5 > 0 and roic_avg3 > 0 and equity_avg_growth3 > 0 and free_cash_flow_avg_growth3 > 0 and eps_avg_growth3 > 0 and revenue_avg_growth3 > 0 and price <= intrinsic_value and price > 0 and is_actively_trading = true").sort_by{|c| -c.discount}
 
       when "Big 5, 3 Year, Discounted"
-        @companies = Company.where("roic_avg3 > 0 and equity_avg_growth3 > 0 and free_cash_flow_avg_growth3 > 0 and eps_avg_growth3 > 0 and revenue_avg_growth3 > 0 and price <= intrinsic_value and eps_growth_rate < 20").order("sector, industry")
+        @companies = Company.where("roic_avg3 > 0 and equity_avg_growth3 > 0 and free_cash_flow_avg_growth3 > 0 and eps_avg_growth3 > 0 and revenue_avg_growth3 > 0 and price <= intrinsic_value and eps_growth_rate < 20 and is_actively_trading = true and price > 0").sort_by{|c| -c.discount}
 
       when "Intrinsic Value Discounted"
         # @companies = Company.where('is_actively_trading = true and price < intrinsic_value').sort_by {|c| c.price / c.intrinsic_value}
-        @companies = Company.where('is_actively_trading = true and price < intrinsic_value').order("sector, industry")
+        @companies = Company.where('is_actively_trading = true and price < intrinsic_value').sort_by{|c| -c.discount}
       
       when "Predictability"
         num_companies = 5000
